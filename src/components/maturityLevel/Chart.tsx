@@ -1,4 +1,4 @@
-import type {ReportItem} from "../../pages/MaturityLevel.tsx";
+import type {ReportItem} from "@/pages/MaturityLevel.tsx";
 import {useMemo} from "react";
 import ReactECharts from "echarts-for-react";
 

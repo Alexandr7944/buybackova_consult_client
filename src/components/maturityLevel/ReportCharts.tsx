@@ -1,4 +1,4 @@
-import type {Report} from "../../pages/MaturityLevel.tsx";
+import type {Report} from "@/pages/MaturityLevel.tsx";
 import {Chart} from "./Chart.tsx";
 import {useMemo} from "react";
 import {format} from "date-fns";

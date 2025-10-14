@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from "react";
-import type {Section} from "../../pages/MaturityLevel.tsx";
+import type {Section} from "@/pages/MaturityLevel.tsx";
 import {LevelSelect} from "./LevelSelect.tsx";
 
 export type FormState = Record<

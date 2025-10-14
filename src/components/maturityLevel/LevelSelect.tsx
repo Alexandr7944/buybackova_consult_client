@@ -1,17 +1,12 @@
 import React from "react";
 
-type Level = {
-    title: string;
-    value: number
-};
-
 type PropsType = {
     value: number | null;
     handleLevelChange: (value: string | undefined) => void;
 }
 
 export const LevelSelect: React.FC<PropsType> = ({value, handleLevelChange}) => {
-    const levelOptions: Level[] = [
+    const levelOptions = [
         {title: "Свидетельства предоставлены в полном объеме", value: 3},
         {title: "Частично реализовано", value: 1},
         {title: "Нет свидетельств о реализации положения стандарта", value: 0},
@@ -24,13 +19,11 @@ export const LevelSelect: React.FC<PropsType> = ({value, handleLevelChange}) => 
             onChange={(e) => handleLevelChange(e.target.value)}
         >
             <option value={undefined}>—</option>
-            {
-                levelOptions.map(({title, value}) => (
-                    <option key={value} value={value}>
-                        {title}
-                    </option>
-                ))
-            }
+            {levelOptions.map(({title, value}) => (
+                <option key={value} value={value}>
+                    {title}
+                </option>
+            ))}
         </select>
     )
 }

@@ -1,5 +1,4 @@
-import {About} from "../pages/About.tsx";
-import {MaturityLevel} from "../pages/MaturityLevel.tsx";
+import {About, MaturityLevel} from "@/pages";
 
 export const routesList = [
     {path: '/about', element: About},
