@@ -1,73 +1,42 @@
-import React, {useEffect, useState} from "react";
-import {MaturityLevelInput} from "../components/maturityLevel/MaturityLevelInput";
-import {ReportCharts} from "../components/maturityLevel/ReportCharts.tsx";
-
-export type Row = {
-    id: number;
-    standard: string;
-    question: string;
-    result: number | null;
-};
-
-export type Section = {
-    id: number;
-    title: string;
-    rows: Row[];
-};
-
-export type ReportItem = { title: string, result: number };
-
-export type Report = {
-    reportByCategory: ReportItem[],
-    reportBySection: ReportItem[],
-    total: { totalValue: number, description: string }
-}
+import React, { useEffect, useState } from "react";
+import { useFetcher, useLoaderData, useRevalidator } from "react-router-dom";
+import { MaturityLevelInput } from "@/components/maturityLevel/MaturityLevelInput";
+import { ReportCharts } from "@/components/maturityLevel/ReportCharts";
+import type { Section, Report } from "./shared/types";
 
 export const MaturityLevel: React.FC = () => {
-    const [sections, setSections] = useState<Section[]>([]);
+    // Секции приходят из loader роутера
+    const sections = useLoaderData() as Section[];
+    // Отчёт возвращается из action через fetcher
+    const fetcher = useFetcher<Report>();
+
     const [reports, setReports] = useState<Report | null>(null);
-    const serverURL = import.meta.env.MODE === "production"
-        ? import.meta.env.VITE_SERVER_PATH
-        : import.meta.env.VITE_URL_DEV_API;
+    const revalidator = useRevalidator();
 
     useEffect(() => {
-        fetchSections();
-    }, []);
-
-    async function fetchSections() {
-        try {
-            const res = await fetch(serverURL + '/maturity-level')
-            if (res.ok) {
-                const data = await res.json();
-                setSections(data);
-            }
-        } catch (error) {
-            console.log(error)
+        if (fetcher.state === "idle" && fetcher.data) {
+            setReports(fetcher.data);
         }
-    }
+    }, [fetcher.state, fetcher.data]);
+
 
     async function resetFormState() {
-        // localStorage.removeItem('maturityLevelFormState')
-        // await fetchSections();
+        localStorage.removeItem("maturityLevelFormState");
+
+        await revalidator.revalidate();
+        setReports(null);
     }
 
-    async function submitForm() {
-        const state = localStorage.getItem('maturityLevelFormState');
+    function submitForm() {
+        const state = localStorage.getItem("maturityLevelFormState");
         if (!state) return;
 
-        const res = await fetch(serverURL + '/maturity-level/report', {
-                headers: {'Content-Type': 'application/json'},
-                method:  'POST',
-                body:    state,
-            }
-        )
+        const formData = new FormData();
+        formData.set("state", state);
 
-        if (res.ok) {
-            const data = await res.json();
-            console.log(data);
-            setReports(data);
-        }
+        fetcher.submit(formData, {method: "post"});
     }
+
 
     return (
         <div className="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">
