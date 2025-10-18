@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from "react";
-import type {Section} from "@/pages/MaturityLevel.tsx";
 import {LevelSelect} from "./LevelSelect.tsx";
+import type {Row, Section} from "@/pages/MaturityLevel/shared/types.ts";
 
 export type FormState = Record<
     string,
@@ -124,7 +124,7 @@ export const MaturityLevelInput: React.FC<MaturityLevelProps> = ({sections, subm
 
                             {/* Строки раздела */}
                             {selectedSection.includes(section.id) &&
-                                section.rows.map((row, idx) => {
+                                section.rows.map((row: Row, idx: number) => {
                                     const value = state[section.id]?.[row.id];
                                     const isEven = idx % 2 === 1;
                                     return (
@@ -153,12 +153,11 @@ export const MaturityLevelInput: React.FC<MaturityLevelProps> = ({sections, subm
             <div className="flex justify-end mt-4 space-x-2">
                 <button
                     type="button"
+                    className="button w-auto"
                     onClick={() => {
                         setSelectedSection([]);
                         submitForm();
                     }}
-                    className="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-800 ring-1 ring-inset
-                    ring-gray-300 hover:bg-gray-200 cursor-pointer"
                 >
                     Отправить
                 </button>

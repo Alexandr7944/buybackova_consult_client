@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
-#root {
+.container {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0 2rem;
 }
 
 html {
@@ -13,4 +13,23 @@ html {
 body {
     font-family:      'Inter', sans-serif;
     background-color: rgba(236, 234, 234, 0.3);
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    gap: 1rem;
+}
+
+@layer components {
+    .container {
+        @apply mx-auto max-w-6xl p-4 sm:p-6 lg:p-8 flex-1;
+    }
+    .button {
+        @apply  px-3 py-2 flex w-full justify-center rounded-md bg-gray-100 hover:bg-gray-200 px-3 text-sm font-semibold leading-6 text-gray-800 shadow-sm hover:bg-blue-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ;
+    }
+    .input {
+        @apply block w-full outline-none rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6;
+    }
 }

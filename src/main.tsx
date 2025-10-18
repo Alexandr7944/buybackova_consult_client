@@ -6,7 +6,6 @@ import {router} from "@/router/RoutesList";
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <div>header</div>
-        <RouterProvider router={router} />
+        <RouterProvider router={router}/>
     </StrictMode>
 )

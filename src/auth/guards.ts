@@ -18,14 +18,13 @@ export type AuthOptions = {
  */
 export function withAuth(options: AuthOptions, next?: Loader): Loader {
   return async (args: LoaderFunctionArgs) => {
-    debugger;
     const { request } = args;
     const user = await getCurrentUser(request.signal);
 
     // Требуется авторизация
     if (options.requireAuth && !user) {
       const url = new URL(request.url);
-      const redirectUrl = new URL("/login", url.origin);
+      const redirectUrl = new URL("/auth", url.origin);
       redirectUrl.searchParams.set("redirect", url.pathname + url.search);
       throw redirectResponse(redirectUrl.pathname + redirectUrl.search, 302);
     }

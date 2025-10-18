@@ -1,4 +1,4 @@
-import {getBaseUrl} from "@/shared/api";
+import {httpJson} from "@/shared/api";
 
 export type User = {
     id: string;
@@ -16,28 +16,12 @@ let cachedUser: User | null | undefined; // undefined = не загружен; n
 export async function getCurrentUser(signal?: AbortSignal): Promise<User | null> {
     if (cachedUser !== undefined) return cachedUser;
 
-    const url = getBaseUrl() + "/auth/me";
     try {
-        const res = await fetch(url, {
-            method:      "GET",
-            credentials: "include", // если используете cookie-сессию
-            signal,
-        });
-
-        if (res.status === 401) {
-            cachedUser = null;
-            return cachedUser;
-        }
-
-        if (!res.ok) {
-            // Не авторизовано vs другие ошибки — для простоты считаем гостем
-            cachedUser = null;
-            return cachedUser;
-        }
-
-        cachedUser = (await res.json()) as User;
+        const res = await httpJson<User | null>('/auth/profile', {signal,});
+        cachedUser = res && Object.keys(res || {}).length > 0 ?  res : null;
         return cachedUser;
-    } catch {
+    } catch(err) {
+        console.log(err)
         // В сетевую ошибку оставим пользователя гостем
         cachedUser = null;
         return cachedUser;

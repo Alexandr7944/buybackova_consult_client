@@ -8,7 +8,6 @@ export function fetchSections(signal?: AbortSignal): Promise<Section[]> {
 export function postReport(stateJson: string, signal?: AbortSignal): Promise<Report> {
   return httpJson<Report>("/maturity-level/report", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: stateJson,
     signal,
   });

@@ -1,13 +1,22 @@
 import {createBrowserRouter, Outlet, type RouteObject} from "react-router-dom";
 import {AppSkeleton} from "@/pages/AppSkeleton";
 import {withAuth} from "@/auth/guards";
+import {Header} from "@/components/Header.tsx";
+import ErrorBoundary from "@/pages/ErrorBoundary.tsx";
 
 const basename = import.meta.env.MODE === "production"
     ? import.meta.env.VITE_PRODUCT_PATH
     : undefined;
 
 function RootLayout() {
-    return <Outlet/>;
+    return (
+        <>
+            <Header/>
+            <div className="container">
+                <Outlet/>
+            </div>
+        </>
+    );
 }
 
 export const routes: RouteObject[] = [
@@ -16,33 +25,34 @@ export const routes: RouteObject[] = [
         path:            "/",
         Component:       RootLayout,
         HydrateFallback: AppSkeleton,
+        errorElement:    <ErrorBoundary/>,
         children:        [
-            {
-                index: true,
-                lazy: async () => {
-                    const mod = await import("@/pages/MaturityLevel/maturity-level.route");
-                    return {
-                        Component: mod.Component,
-                        loader: mod.loader,
-                        action: mod.action,
-                    };
-                },
-            },
 
             // Группа защищённых маршрутов: все дети требуют авторизацию
             // loader возвращает объект пользователя; доступен через useRouteLoaderData("auth")
             {
-                id: "auth",
-                path: "",
-                loader: withAuth({ requireAuth: true }),
+                id:       "auth",
+                path:     "",
+                loader:   withAuth({requireAuth: true}),
                 children: [
+                    {
+                        index: true,
+                        lazy:  async () => {
+                            const mod = await import("@/pages/MaturityLevel/maturity-level.route");
+                            return {
+                                Component: mod.Component,
+                                loader:    mod.loader,
+                                action:    mod.action,
+                            };
+                        },
+                    },
                     // Пример: /about только для авторизованных с ролью admin
                     {
-                        path: "about",
-                        loader: withAuth({ requireAuth: true, roles: ["admin"] }),
-                        lazy: async () => {
+                        path:   "about",
+                        loader: withAuth({requireAuth: true, roles: []}),
+                        lazy:   async () => {
                             const mod = await import("@/pages/About");
-                            return { Component: mod.About };
+                            return {Component: mod.About};
                         },
                     },
                     // сюда можно добавлять другие защищённые маршруты:
@@ -53,12 +63,19 @@ export const routes: RouteObject[] = [
                 ],
             },
             // {
-            //     path: '/about',
-            //     lazy: async () => {
+            //     path:   "/about",
+            //     lazy:   async () => {
             //         const mod = await import("@/pages/About");
             //         return {Component: mod.About};
             //     },
             // },
+            {
+                path: '/auth',
+                lazy: async () => {
+                    const mod = await import("@/pages/Authorisation");
+                    return {Component: mod.Authorisation};
+                },
+            },
             {
                 path: "*",
                 lazy: async () => {
