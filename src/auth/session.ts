@@ -1,10 +1,13 @@
 import {httpJson} from "@/shared/api";
 
 export type User = {
-    id: string;
-    email: string;
-    roles?: string[];
-    // добавьте поля профиля по необходимости
+    username: string,
+    roles: Array<string>,
+    profiles: Array<{
+        provider: string,
+        providerUserId: string,
+        displayName: string,
+    }>
 };
 
 let cachedUser: User | null | undefined; // undefined = не загружен; null = гость

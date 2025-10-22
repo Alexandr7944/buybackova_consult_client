@@ -33,7 +33,7 @@ export const routes: RouteObject[] = [
             {
                 id:       "auth",
                 path:     "",
-                loader:   withAuth({requireAuth: true}),
+                loader:   withAuth({requireAuth: true, roles: ['user', 'admin']}),
                 children: [
                     {
                         index: true,
@@ -46,29 +46,15 @@ export const routes: RouteObject[] = [
                             };
                         },
                     },
-                    // Пример: /about только для авторизованных с ролью admin
-                    {
-                        path:   "about",
-                        loader: withAuth({requireAuth: true, roles: []}),
-                        lazy:   async () => {
-                            const mod = await import("@/pages/About");
-                            return {Component: mod.About};
-                        },
-                    },
-                    // сюда можно добавлять другие защищённые маршруты:
-                    // {
-                    //   path: "profile",
-                    //   lazy: async () => ({ Component: (await import("@/pages/Profile")).Profile }),
-                    // }
                 ],
             },
-            // {
-            //     path:   "/about",
-            //     lazy:   async () => {
-            //         const mod = await import("@/pages/About");
-            //         return {Component: mod.About};
-            //     },
-            // },
+            {
+                path: "/about",
+                lazy: async () => {
+                    const mod = await import("@/pages/About");
+                    return {Component: mod.About};
+                },
+            },
             {
                 path: '/auth',
                 lazy: async () => {
