@@ -1,4 +1,4 @@
-import type {User} from "@/auth/session.ts";
+import type {User} from "@/store/useAuthStore.ts";
 
 export function getBaseUrl(): string {
     const isProd = import.meta.env.MODE === "production";

@@ -1,6 +1,6 @@
-import type {ReportItem} from "@/pages/MaturityLevel.tsx";
 import {useMemo} from "react";
 import ReactECharts from "echarts-for-react";
+import type {ReportItem} from "@/pages/new-audits/shared/types.ts";
 
 type Props = {
     reports: ReportItem[],
@@ -10,7 +10,6 @@ type Props = {
 export const Chart = ({reports, title}: Props) => {
     const option = useMemo(() => ({
         radar:  {
-            // shape:     'circle',
             indicator: reports.map(({title}) => ({name: title, max: 100, min: 0}))
         },
         series: [
@@ -19,7 +18,7 @@ export const Chart = ({reports, title}: Props) => {
                 data:  [
                     {
                         name:  title,
-                        value: reports.map(({result}) => result),
+                        value: reports.map(({percentage}) => percentage),
                     },
                 ],
                 label: {

@@ -3,10 +3,9 @@ import {httpJson} from "@/shared/api.ts";
 import {useNavigate} from "react-router-dom";
 import {Box, Button, Container, Paper, Stack, TextField, Typography} from "@mui/material";
 
-export const Authorisation: FC<{}> = () => {
-    const [formData, setFormData] = useState({username: '', password: ''});
+export const Registration: FC<{}> = () => {
+    const [formData, setFormData] = useState({username: '', name: '', password: ''});
     const navigate = useNavigate();
-
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -14,7 +13,7 @@ export const Authorisation: FC<{}> = () => {
             const result = await httpJson<{
                 user: { id: number, username: string },
                 token: string
-            }>('/auth/login', {
+            }>('/auth/registration', {
                 method:  'POST',
                 body:    JSON.stringify(formData),
                 headers: {'Content-Type': 'application/json'}
@@ -23,7 +22,7 @@ export const Authorisation: FC<{}> = () => {
             if (result.token)
                 localStorage.setItem('token', result.token);
 
-            navigate('/');
+            navigate('../');
         } catch (e) {
             console.warn(e);
         }
@@ -36,11 +35,24 @@ export const Authorisation: FC<{}> = () => {
         >
             <Paper elevation={3} sx={{p: 3, width: '100%'}}>
                 <Typography component="h1" variant="h5" align="center" gutterBottom>
-                    Войдите в свой аккаунт
+                    Регистрация
                 </Typography>
 
                 <Box component="form" onSubmit={(e) => e.preventDefault()}>
                     <Stack spacing={2}>
+                        <TextField
+                            id="name"
+                            name="name"
+                            label="Имя"
+                            type="text"
+                            required
+                            autoComplete="name"
+                            value={formData.name}
+                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            placeholder="Введите имя"
+                            fullWidth
+                        />
+
                         <TextField
                             id="username"
                             name="username"
@@ -70,10 +82,18 @@ export const Authorisation: FC<{}> = () => {
                         <Stack direction="row" spacing={1} justifyContent="space-between">
                             <Button
                                 variant="outlined"
+                                onClick={() => navigate('/auth/login')}
+                                fullWidth
+                            >
+                                Авторизация
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
                                 onClick={handleSubmit}
                                 fullWidth
                             >
-                                Войти
+                                Регистрация
                             </Button>
                         </Stack>
                     </Stack>

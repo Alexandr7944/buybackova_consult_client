@@ -1,13 +1,14 @@
-import type { LoaderFunctionArgs } from "react-router-dom";
-import { getCurrentUser, type User } from "@/auth/session";
-import { redirectResponse } from "@/router/redirect";
+import type {LoaderFunctionArgs} from "react-router-dom";
+import {getCurrentUser} from "@/auth/session";
+import {redirectResponse} from "@/router/redirect";
+import type {User} from "@/store/useAuthStore.ts";
 
 type Loader = (args: LoaderFunctionArgs) => Promise<unknown> | unknown;
 
 export type AuthOptions = {
-  requireAuth?: boolean;
-  roles?: string[]; // хотя бы одна из ролей должна совпасть
-  // можно расширить, например, strategy: "all" | "any"
+    requireAuth?: boolean;
+    roles?: string[]; // хотя бы одна из ролей должна совпасть
+    // можно расширить, например, strategy: "all" | "any"
 };
 
 /**
@@ -17,34 +18,38 @@ export type AuthOptions = {
  * - Возвращает данные существующего loader или, если его нет, возвращает объект пользователя
  */
 export function withAuth(options: AuthOptions, next?: Loader): Loader {
-  return async (args: LoaderFunctionArgs) => {
-    const { request } = args;
-    const user = await getCurrentUser(request.signal);
 
-    // Требуется авторизация
-    if (options.requireAuth && !user) {
-      const url = new URL(request.url);
-      const redirectUrl = new URL("/auth", url.origin);
-      redirectUrl.searchParams.set("redirect", url.pathname + url.search);
-      throw redirectResponse(redirectUrl.pathname + redirectUrl.search, 302);
-    }
+    return async (args: LoaderFunctionArgs) => {
+        const {request} = args;
+        const user = await getCurrentUser(request.signal);
 
-    // Проверка ролей (если заданы)
-    if (options.roles && options.roles.length > 0) {
-      const roles = (user?.roles ?? []).map((r) => r.toLowerCase());
-      const required = options.roles.map((r) => r.toLowerCase());
-      const hasAny = required.some((r) => roles.includes(r));
-      if (!hasAny) {
-        throw new Response("Forbidden", { status: 403 });
-      }
-    }
+        // Требуется авторизация
+        if (options.requireAuth && !user) {
+            const url = new URL(request.url);
+            const redirectUrl = new URL(
+                user ? "/auth/login" : "/auth/registration",
+                url.origin
+            );
+            redirectUrl.searchParams.set("redirect", url.pathname + url.search);
+            throw redirectResponse(redirectUrl.pathname + redirectUrl.search, 302);
+        }
 
-    // Выполнить исходный loader, если он есть
-    if (typeof next === "function") {
-      return next(args);
-    }
+        // Проверка ролей (если заданы)
+        if (options.roles && options.roles.length > 0) {
+            const roles = (user?.roles ?? []).map((r) => r.toLowerCase());
+            const required = options.roles.map((r) => r.toLowerCase());
+            const hasAny = required.some((r) => roles.includes(r));
+            if (!hasAny) {
+                throw new Response("Forbidden", {status: 403});
+            }
+        }
 
-    // По умолчанию вернём пользователя, чтобы дети могли получить его через useRouteLoaderData(parentId)
-    return user as User | null;
-  };
+        // Выполнить исходный loader, если он есть
+        if (typeof next === "function") {
+            return next(args);
+        }
+
+        // По умолчанию вернём пользователя, чтобы дети могли получить его через useRouteLoaderData(parentId)
+        return user as User | null;
+    };
 }
