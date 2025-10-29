@@ -1,7 +1,6 @@
-import {AuditItem} from "@/pages/audit-item/AuditItem.tsx";
-import {fetchAuditItem} from "@/pages/audit-item/shared/audit-item.api.ts";
-import {updateAudit} from "@/pages/audit-edit/shared/audit-edit.api.ts";
 import type {ActionFunctionArgs, LoaderFunctionArgs} from "react-router-dom";
+import {AuditItem} from "@/pages/audits/AuditItem.tsx";
+import {fetchAuditItem, updateAudit} from "@/pages/audits/shared/audits.api.ts";
 
 export const Component = AuditItem;
 

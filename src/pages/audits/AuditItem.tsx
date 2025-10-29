@@ -4,9 +4,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import {useMemo,} from "react";
 import {format} from "date-fns";
 import {Chart} from "@/components/maturityLevel/Chart.tsx";
-import type {ReportItem} from "@/pages/new-audits/shared/types.ts";
-import type {Audit} from "@/pages/audits/shared/types.ts";
-import type {Report} from "@/pages/audit-edit/shared/types.ts";
+import type {Audit, Report, ReportItem} from "@/pages/audits/shared/types.ts";
 import {Description} from "@/components/Description.tsx";
 
 export const AuditItem = () => {

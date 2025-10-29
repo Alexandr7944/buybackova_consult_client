@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from "react";
 import {LevelSelect} from "./LevelSelect.tsx";
-import type {Row, Section} from "@/pages/new-audits/shared/types.ts";
+import type {Row, Section} from "@/pages/audits/shared/types.ts";
 import type {Audit} from "@/pages/audits/shared/types.ts";
 import {
     Accordion,

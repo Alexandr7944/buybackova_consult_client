@@ -12,7 +12,7 @@ import {
     TableRow,
     Typography
 } from "@mui/material";
-import type {AuditableObject} from "@/pages/auditable-objects/shared/types.ts";
+import type {AuditableObject} from "@/pages/audits/shared/types.ts";
 import type {Audit} from "@/pages/audits/shared/types.ts";
 import {format} from "date-fns";
 import EditIcon from '@mui/icons-material/edit';

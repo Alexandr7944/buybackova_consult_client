@@ -1,6 +1,6 @@
-import {AuditableObjects} from "@/pages/auditable-objects/index.tsx";
 import type {ActionFunctionArgs, LoaderFunctionArgs} from "react-router-dom";
-import {fetchAuditableObjects, postNewAuditableObject, updateAuditableObject} from "@/pages/auditable-objects/shared/auditable-objects.api.ts";
+import {AuditableObjects} from "@/pages/audits/AuditableObjects.tsx";
+import {fetchAuditableObjects, postNewAuditableObject, updateAuditableObject} from "@/pages/audits/shared/audits.api.ts";
 
 export const Component = AuditableObjects;
 

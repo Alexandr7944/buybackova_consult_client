@@ -1,6 +1,6 @@
 import {AuditList} from "@/pages/audits/AuditList.tsx";
 import type {LoaderFunctionArgs} from "react-router-dom";
-import {fetchObject} from "@/pages/audits/shared/audit-list.api.ts";
+import {fetchObject} from "@/pages/audits/shared/audits.api.ts";
 
 export const Component = AuditList;
 

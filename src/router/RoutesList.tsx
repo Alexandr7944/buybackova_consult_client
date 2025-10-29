@@ -51,7 +51,7 @@ export const routes: RouteObject[] = [
                         // objects list by owner
                         index: true,
                         lazy:  async () => {
-                            const mod = await import("@/pages/auditable-objects/auditable-objects.route.ts");
+                            const mod = await import("@/pages/audits/auditable-objects.route.ts");
                             return {
                                 Component: mod.Component,
                                 loader:    mod.loader,
@@ -72,42 +72,64 @@ export const routes: RouteObject[] = [
                         },
                     },
                     {
-                        // show audit item by id
-                        path: '/audit/:id',
-                        lazy: async () => {
-                            const mod = await import("@/pages/audit-item/audit-item.route");
-                            return {
-                                Component: mod.Component,
-                                loader:    mod.loader,
-                                action:    mod.action,
-                            };
-                        },
+                        path: '/audit',
+                        children: [
+                            {
+                                // show audit item by id
+                                path: ':id',
+                                lazy: async () => {
+                                    const mod = await import("@/pages/audits/audit-item.route");
+                                    return {
+                                        Component: mod.Component,
+                                        loader:    mod.loader,
+                                        action:    mod.action,
+                                    };
+                                },
+                            },
+                            {
+                                // create new audit by object id
+                                path: ':objectId/create',
+                                lazy: async () => {
+                                    const mod = await import("@/pages/audits/new-audit.route");
+                                    return {
+                                        Component: mod.Component,
+                                        loader:    mod.loader,
+                                        action:    mod.action,
+                                    };
+                                },
+                            },
+                            {
+                                // edit audit by id
+                                path: ':id/edit',
+                                lazy: async () => {
+                                    const mod = await import("@/pages/audits/audit-edit.route");
+                                    return {
+                                        Component: mod.Component,
+                                        loader:    mod.loader,
+                                        action:    mod.action,
+                                    };
+                                },
+                            },
+                        ]
                     },
                     {
-                        // create new audit by object id
-                        path: '/audit/:objectId/create',
-                        lazy: async () => {
-                            const mod = await import("@/pages/new-audits/new-audit.route");
-                            return {
-                                Component: mod.Component,
-                                loader:    mod.loader,
-                                action:    mod.action,
-                            };
-                        },
-                    },
-                    {
-                        // edit audit by id
-                        path: '/audit/:id/edit',
-                        lazy: async () => {
-                            const mod = await import("@/pages/audit-edit/audit-edit.route");
-                            return {
-                                Component: mod.Component,
-                                loader:    mod.loader,
-                                action:    mod.action,
-                            };
-                        },
-                    },
-                ],
+                        path:     '/admin',
+                        loader:   withAuth({requireAuth: true, roles: ['admin']}),
+                        children: [
+                            {
+                                path: 'users',
+                                lazy: async () => {
+                                    const mod = await import('@/pages/admin/users.route');
+                                    return {
+                                        Component: mod.Component,
+                                        // loader:    mod.loader,
+                                        // action:    mod.action
+                                    };
+                                }
+                            },
+                        ]
+                    }
+                ]
             },
             {
                 path: "/about",

@@ -1,6 +1,6 @@
 import {useMemo} from "react";
 import ReactECharts from "echarts-for-react";
-import type {ReportItem} from "@/pages/new-audits/shared/types.ts";
+import type {ReportItem} from "@/pages/audits/shared/types.ts";
 
 type Props = {
     reports: ReportItem[],

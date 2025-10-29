@@ -1,6 +1,6 @@
-import {NewAudit} from "@/pages/new-audits/NewAudit.tsx";
-import {fetchSections, postReport} from "@/pages/new-audits/shared/new-audit.api.ts";
 import type {ActionFunctionArgs, LoaderFunctionArgs} from "react-router-dom";
+import {NewAudit} from "@/pages/audits/NewAudit.tsx";
+import {fetchSections, postReport} from "@/pages/audits/shared/audits.api.ts";
 
 export const Component = NewAudit;
 

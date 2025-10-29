@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import EditIcon from '@mui/icons-material/edit';
 import React from "react";
-import type {AuditableObject} from "@/pages/auditable-objects/shared/types.ts";
+import type {AuditableObject} from "@/pages/audits/shared/types.ts";
 import {useFetcher, useLoaderData, useNavigate} from "react-router-dom";
 import {EditObject} from "@/components/EditObject.tsx";
 

@@ -52,7 +52,8 @@ export const Header: FC = () => {
         {name: "Главная", to: "../"},
         {name: "О нас", to: "/about"},
         {name: "Услуги", to: "/services"},
-        {name: "Контакты", to: "/contacts"}
+        {name: "Контакты", to: "/contacts"},
+        ...(user?.roles.includes('admin') ? [{name: "Пользователи", to: "/admin/users"}] : [])
     ];
 
     const drawer = (

@@ -1,5 +1,3 @@
-import type {AuditableObject} from "@/pages/auditable-objects/shared/types.ts";
-
 export type Audit = {
     id: number;
     object: AuditableObject;
@@ -20,4 +18,37 @@ export type Audit = {
         percentage: number;
         title: string;
     }[]
+}
+
+export type Row = {
+    id: number;
+    standard: string;
+    question: string;
+    result: number | null;
+};
+
+export type Section = {
+    id: number;
+    title: string;
+    rows: Row[];
+};
+
+export type ReportItem = {
+    title: string;
+    percentage: number
+};
+
+export type Report = {
+    reportByCategory: ReportItem[];
+    reportBySection: ReportItem[];
+    total: { totalValue: number; description: string };
+};
+
+
+export interface AuditableObject {
+    id: string;
+    name: string;
+    address: string;
+    owner: string;
+    audits: Audit[];
 }

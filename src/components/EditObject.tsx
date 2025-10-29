@@ -1,6 +1,6 @@
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
-import type {AuditableObject} from "@/pages/auditable-objects/shared/types.ts";
 import React from "react";
+import type {AuditableObject} from "@/pages/audits/shared/types.ts";
 
 type EditObjectProps = {
     form: Partial<AuditableObject>,
