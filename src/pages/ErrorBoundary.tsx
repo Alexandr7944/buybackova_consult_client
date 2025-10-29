@@ -1,6 +1,18 @@
 import {useState} from "react";
-import {Link, isRouteErrorResponse, useRouteError} from "react-router-dom";
+import {Link as RouterLink, isRouteErrorResponse, useRouteError} from "react-router-dom";
 import {Header} from "@/components/Header.tsx";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import Divider from "@mui/material/Divider";
+import CodeIcon from "@mui/icons-material/Code";
+import HomeIcon from "@mui/icons-material/Home";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 type Details = {
     title: string;
@@ -10,14 +22,8 @@ type Details = {
 };
 
 /**
- * ErrorBoundary page: a full-screen page intended to be used as `errorElement`
- * in React Router. It handles:
- * - Unknown routes (404)
- * - Errors thrown in loaders/actions
- * - Manually thrown responses
- *
- * Usage (React Router):
- *   { path: '/', element: <RootLayout />, errorElement: <ErrorBoundary />, children: [...] }
+ * ErrorBoundary page: Material UI version used as `errorElement` in React Router.
+ * Light, friendly styling with helpful actions.
  */
 export default function ErrorBoundary() {
     const routeError = useRouteError();
@@ -25,85 +31,106 @@ export default function ErrorBoundary() {
 
     const details: Details = parseError(routeError);
 
+    const goBack = () => {
+        if (window.history.length > 1) window.history.back();
+        else window.location.href = "/";
+    };
+
+    const refresh = () => window.location.reload();
+
     return (
-        <div>
+        <Stack
+            direction="column"
+            sx={{height: "100vh"}}
+        >
             <Header/>
-            <div
-                className="min-h-screen bg-gray-950 text-gray-100 flex items-center justify-center px-4 py-12"
+            <Box
                 role="alert"
                 aria-live="assertive"
+                sx={{
+                    flex:           1,
+                    display:        "flex",
+                    alignItems:     "center",
+                    justifyContent: "center",
+                    px:             2,
+                    py:             {xs: 4, md: 8},
+                    bgcolor:        (t) => t.palette.background.default,
+                }}
             >
-                <div className="w-full max-w-2xl">
-                    {/* Logo slot (replace with your SVG/logo component if needed) */}
-                    <div className="mb-6 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center">
-                            <svg viewBox="0 0 24 24" className="h-6 w-6 text-white" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h10M4 17h7"/>
-                            </svg>
-                        </div>
-                        <div className="text-lg font-semibold tracking-tight">Ошибка</div>
-                    </div>
+                <Paper elevation={1} sx={{p: {xs: 3, sm: 4}, maxWidth: 900, width: "100%"}}>
+                    <Stack spacing={2}>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <CodeIcon color="primary"/>
+                            <Typography variant="h6" sx={{fontWeight: 600}}>
+                                Произошла ошибка
+                            </Typography>
+                        </Stack>
 
-                    <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-6 shadow-lg">
-                        <div className="flex items-start justify-between gap-4">
-                            <div>
-                                <h1 className="text-2xl font-semibold">
-                                    {details.title}
-                                    {typeof details.status === "number" ? (
-                                        <span className="ml-2 text-sm text-gray-400">({details.status})</span>
-                                    ) : null}
-                                </h1>
-                                {details.description ? (
-                                    <p className="mt-2 text-gray-300">{details.description}</p>
+                        <Alert severity="error" variant="outlined">
+                            <AlertTitle>
+                                {details.title}
+                                {typeof details.status === "number" ? (
+                                    <Typography component="span" color="text.secondary" sx={{ml: 1}}>
+                                        ({details.status})
+                                    </Typography>
                                 ) : null}
-                            </div>
-                        </div>
+                            </AlertTitle>
+                            {details.description || "Не удалось загрузить страницу или выполнить действие."}
+                        </Alert>
 
-                        <div className="mt-6 flex flex-wrap items-center gap-3">
-                            <Link
+                        <Stack direction={{xs: "column", sm: "row"}} spacing={2}>
+                            <Button
+                                variant="contained"
+                                startIcon={<HomeIcon/>}
+                                component={RouterLink}
                                 to="/"
-                                className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 transition"
                             >
                                 На главную
-                            </Link>
-                            <button
-                                type="button"
-                                onClick={() => window.history.length > 1 ? window.history.back() : (window.location.href = "/")}
-                                className="inline-flex items-center justify-center rounded-md border border-gray-700 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-800 transition"
-                            >
+                            </Button>
+                            <Button variant="outlined" startIcon={<ArrowBackIcon/>} onClick={goBack}>
                                 Назад
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => window.location.reload()}
-                                className="inline-flex items-center justify-center rounded-md border border-gray-700 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-800 transition"
-                            >
+                            </Button>
+                            <Button variant="text" startIcon={<RefreshIcon/>} onClick={refresh}>
                                 Обновить
-                            </button>
-
-                            {/* Toggle details */}
-                            <button
-                                type="button"
+                            </Button>
+                            <Button
+                                variant="text"
                                 onClick={() => setShowDetails((v) => !v)}
-                                className="ml-auto inline-flex items-center justify-center rounded-md border border-gray-700 px-3 py-2 text-xs font-medium text-gray-300 hover:bg-gray-800 transition"
+                                sx={{ml: {sm: "auto"}}}
                                 aria-expanded={showDetails}
                                 aria-controls="error-details"
                             >
                                 {showDetails ? "Скрыть детали" : "Показать детали"}
-                            </button>
-                        </div>
+                            </Button>
+                        </Stack>
 
                         {showDetails ? (
-                            <div id="error-details" className="mt-4">
-              <pre className="whitespace-pre-wrap text-xs text-gray-300 bg-gray-950/60 border border-gray-800 rounded-lg p-3 overflow-auto">
-                {formatRaw(routeError)}
-              </pre>
-                            </div>
+                            <Box id="error-details" sx={{mt: 1}}>
+                                <Divider sx={{mb: 1}}/>
+                                <Paper variant="outlined" sx={{p: 2, bgcolor: (t) => t.palette.grey[50]}}>
+                                    <Typography
+                                        component="pre"
+                                        sx={{
+                                            m:          0,
+                                            whiteSpace: "pre-wrap",
+                                            fontSize:   12,
+                                            color:      (t) => t.palette.text.secondary,
+                                            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+                                        }}
+                                    >
+                                        {formatRaw(routeError)}
+                                    </Typography>
+                                </Paper>
+                            </Box>
                         ) : null}
-                    </div>
-                </div>
-            </div>
-        </div>
+
+                        <Typography variant="body2" color="text.secondary">
+                            Если ошибка повторяется, опишите свои действия и пришлите скриншот — это поможет быстрее исправить проблему.
+                        </Typography>
+                    </Stack>
+                </Paper>
+            </Box>
+        </Stack>
     );
 }
 
@@ -116,7 +143,6 @@ function parseError(err: unknown): Details {
             description: err.statusText || (typeof err.data === "string" ? err.data : undefined),
             raw:         err,
         };
-        // Try to surface message from JSON if available
         if (!base.description && typeof err.data === "object" && err.data && "message" in err.data) {
             base.description = String((err.data as any).message);
         }

@@ -7,7 +7,7 @@ import {
     Container,
     Box,
     Button,
-    ButtonGroup,
+    Stack,
     IconButton,
     Menu,
     MenuItem,
@@ -68,10 +68,10 @@ export const Header: FC = () => {
             </List>
             <Box px={2} pb={2}>
                 {!(user && user.username)
-                    ? <ButtonGroup fullWidth variant="contained" aria-label="auth actions">
-                        <Button onClick={() => navigate('/auth/login')}>Вход</Button>
-                        <Button onClick={() => navigate('/auth/registration')}>Регистрация</Button>
-                    </ButtonGroup>
+                    ? <Stack gap={2}>
+                        <Button fullWidth variant="contained" aria-label="auth actions" onClick={() => navigate('/auth/login')}>Вход</Button>
+                        <Button fullWidth variant="contained" aria-label="auth actions" onClick={() => navigate('/auth/registration')}>Регистрация</Button>
+                    </Stack>
                     : <Button
                         fullWidth
                         variant="outlined"

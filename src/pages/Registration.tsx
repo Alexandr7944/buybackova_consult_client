@@ -3,7 +3,7 @@ import {httpJson} from "@/shared/api.ts";
 import {useNavigate} from "react-router-dom";
 import {Box, Button, Container, Paper, Stack, TextField, Typography} from "@mui/material";
 
-export const Registration: FC<{}> = () => {
+export const Registration: FC = () => {
     const [formData, setFormData] = useState({username: '', name: '', password: ''});
     const navigate = useNavigate();
     const handleSubmit = async (e: FormEvent) => {
@@ -79,23 +79,22 @@ export const Registration: FC<{}> = () => {
                             fullWidth
                         />
 
-                        <Stack direction="row" spacing={1} justifyContent="space-between">
-                            <Button
-                                variant="outlined"
-                                onClick={() => navigate('/auth/login')}
-                                fullWidth
-                            >
-                                Авторизация
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleSubmit}
-                                fullWidth
-                            >
-                                Регистрация
-                            </Button>
-                        </Stack>
+                        <Button
+                            variant="outlined"
+                            onClick={() => navigate('/auth/login')}
+                            fullWidth
+                        >
+                            Авторизация
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSubmit}
+                            fullWidth
+                        >
+                            Регистрация
+                        </Button>
                     </Stack>
                 </Box>
             </Paper>
