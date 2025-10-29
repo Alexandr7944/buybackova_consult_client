@@ -49,32 +49,38 @@ export const Header: FC = () => {
     };
 
     const links = [
-        {name: "Главная", to: "/"},
+        {name: "Главная", to: "../"},
         {name: "О нас", to: "/about"},
         {name: "Услуги", to: "/services"},
         {name: "Контакты", to: "/contacts"}
     ];
 
     const drawer = (
-        <Box role="presentation" sx={{ width: 260 }} onClick={toggleMobile}>
+        <Box role="presentation" sx={{width: 260}} onClick={toggleMobile}>
             <List>
                 {links.map(l => (
                     <ListItem key={l.to} disablePadding>
                         <ListItemButton component={RouterLink} to={l.to}>
-                            <ListItemText primary={l.name} />
+                            <ListItemText primary={l.name}/>
                         </ListItemButton>
                     </ListItem>
                 ))}
             </List>
             <Box px={2} pb={2}>
-                {!(user && user.username) ? (
-                    <ButtonGroup fullWidth variant="contained" aria-label="auth actions">
+                {!(user && user.username)
+                    ? <ButtonGroup fullWidth variant="contained" aria-label="auth actions">
                         <Button onClick={() => navigate('/auth/login')}>Вход</Button>
                         <Button onClick={() => navigate('/auth/registration')}>Регистрация</Button>
                     </ButtonGroup>
-                ) : (
-                    <Button fullWidth variant="outlined" onClick={handleLogout} startIcon={<Logout />}>Выйти</Button>
-                )}
+                    : <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={handleLogout}
+                        startIcon={<Logout/>}
+                    >
+                        Выйти
+                    </Button>
+                }
             </Box>
         </Box>
     );
@@ -82,26 +88,26 @@ export const Header: FC = () => {
     return (
         <AppBar position="static" color="primary" enableColorOnDark>
             <Container maxWidth="lg">
-                <Toolbar disableGutters sx={{ gap: 2 }}>
+                <Toolbar disableGutters sx={{gap: 2}}>
                     {/* Mobile menu button */}
-                    <Box sx={{ display: { xs: 'inline-flex', md: 'none' } }}>
+                    <Box sx={{display: {xs: 'inline-flex', md: 'none'}}}>
                         <IconButton
                             color="inherit"
                             edge="start"
                             onClick={toggleMobile}
                             aria-label="open drawer"
                         >
-                            <MenuIcon />
+                            <MenuIcon/>
                         </IconButton>
                     </Box>
 
                     {/* Logo */}
-                    <Button color="inherit" component={RouterLink} to="/" sx={{ fontWeight: 700, letterSpacing: 0.3 }}>
+                    <Button color="inherit" component={RouterLink} to="../" sx={{fontWeight: 700, letterSpacing: 0.3}}>
                         ВАУbakova
                     </Button>
 
                     {/* Desktop links */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 2 }}>
+                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, gap: 2}}>
                         {links.map(l => (
                             <Button key={l.to} color="inherit" component={RouterLink} to={l.to}>
                                 {l.name}
@@ -110,28 +116,28 @@ export const Header: FC = () => {
                     </Box>
 
                     {/* Right side */}
-                    <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
+                    <Box sx={{display: {xs: 'none', md: 'flex'}, alignItems: 'center', gap: 1}}>
                         {!(user && user.username) ? (
                             <>
                                 <IconButton color="inherit" onClick={handleMenuOpen}>
-                                    <PersonOutlineOutlinedIcon />
+                                    <PersonOutlineOutlinedIcon/>
                                 </IconButton>
                                 <Menu
                                     anchorEl={anchorEl}
                                     open={menuOpen}
                                     onClose={handleMenuClose}
-                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                    anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                                    transformOrigin={{vertical: 'top', horizontal: 'right'}}
                                 >
                                     <MenuItem disabled>
                                         <ListItemIcon>
-                                            <AccountCircle fontSize="small" />
+                                            <AccountCircle fontSize="small"/>
                                         </ListItemIcon>
                                         <ListItemText>
                                             <Typography variant="body2">{user?.username ?? 'Гость'}</Typography>
                                         </ListItemText>
                                     </MenuItem>
-                                    <Divider />
+                                    <Divider/>
                                     <MenuItem onClick={() => navigate('/auth/login')}>
                                         <ListItemText>Вход</ListItemText>
                                     </MenuItem>
@@ -143,27 +149,27 @@ export const Header: FC = () => {
                         ) : (
                             <>
                                 <IconButton color="inherit" onClick={handleMenuOpen}>
-                                    <AccountCircle />
+                                    <AccountCircle/>
                                 </IconButton>
                                 <Menu
                                     anchorEl={anchorEl}
                                     open={menuOpen}
                                     onClose={handleMenuClose}
-                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                    anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                                    transformOrigin={{vertical: 'top', horizontal: 'right'}}
                                 >
                                     <MenuItem disabled>
                                         <ListItemIcon>
-                                            <AccountCircle fontSize="small" />
+                                            <AccountCircle fontSize="small"/>
                                         </ListItemIcon>
                                         <ListItemText>
                                             <Typography variant="body2">{user?.username}</Typography>
                                         </ListItemText>
                                     </MenuItem>
-                                    <Divider />
+                                    <Divider/>
                                     <MenuItem onClick={handleLogout}>
                                         <ListItemIcon>
-                                            <Logout fontSize="small" />
+                                            <Logout fontSize="small"/>
                                         </ListItemIcon>
                                         Выйти
                                     </MenuItem>
@@ -179,8 +185,8 @@ export const Header: FC = () => {
                 anchor="left"
                 open={mobileOpen}
                 onClose={toggleMobile}
-                ModalProps={{ keepMounted: true }}
-                sx={{ display: { xs: 'block', md: 'none' } }}
+                ModalProps={{keepMounted: true}}
+                sx={{display: {xs: 'block', md: 'none'}}}
             >
                 {drawer}
             </Drawer>

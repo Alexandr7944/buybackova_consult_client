@@ -40,7 +40,7 @@ export function withAuth(options: AuthOptions, next?: Loader): Loader {
             const required = options.roles.map((r) => r.toLowerCase());
             const hasAny = required.some((r) => roles.includes(r));
             if (!hasAny) {
-                throw new Response("Forbidden", {status: 403});
+                throw new Response("Отказано в доступе, запросите расширение прав", {status: 403});
             }
         }
 

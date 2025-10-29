@@ -23,7 +23,7 @@ export const Authorisation: FC<{}> = () => {
             if (result.token)
                 localStorage.setItem('token', result.token);
 
-            navigate('/');
+            navigate('../');
         } catch (e) {
             console.warn(e);
         }

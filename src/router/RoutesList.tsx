@@ -3,25 +3,33 @@ import {AppSkeleton} from "@/pages/AppSkeleton";
 import {withAuth} from "@/auth/guards";
 import {Header} from "@/components/Header.tsx";
 import ErrorBoundary from "@/pages/ErrorBoundary.tsx";
-import {useAppDispatch} from "@/hooks/hook.ts";
-import {setUser, type User} from "@/store/useAuthStore.ts";
+import {useEffect} from "react";
+import {useAppDispatch, useAppSelector} from "@/hooks/hook.ts";
+import {logout, setUser, type User} from "@/store/useAuthStore.ts";
+import {Container} from "@mui/material";
 
 const basename = import.meta.env.MODE === "production"
     ? import.meta.env.VITE_PRODUCT_PATH
     : undefined;
 
 function RootLayout() {
-    const dispatch = useAppDispatch();
     const user: User | undefined = useRouteLoaderData("auth");
-    if (user)
-        dispatch(setUser(user));
+    const savedUser = useAppSelector(state => state.useAuthStore.user);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (user && user?.username !== savedUser?.username)
+            dispatch(setUser(user));
+        else if (!user)
+            dispatch(logout());
+    }, [user]);
 
     return (
         <>
             <Header/>
-            <div className="container">
+            <Container maxWidth="lg">
                 <Outlet/>
-            </div>
+            </Container>
         </>
     );
 }
