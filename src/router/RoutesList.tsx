@@ -79,7 +79,7 @@ export const routes: RouteObject[] = [
                             return {
                                 Component: mod.Component,
                                 loader:    mod.loader,
-                                // action:    mod.action, // TODO: добавления описания для графиков
+                                action:    mod.action,
                             };
                         },
                     },

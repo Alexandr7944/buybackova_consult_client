@@ -1,13 +1,17 @@
-import {useLoaderData} from "react-router-dom";
+import {useFetcher, useLoaderData} from "react-router-dom";
 import {Paper, TableContainer, Table, TableBody, TableRow, TableCell} from "@mui/material";
-import {useMemo} from "react";
+import {useMemo,} from "react";
 import {Chart} from "@/components/maturityLevel/Chart.tsx";
 import {format} from "date-fns";
 import type {ReportItem} from "@/pages/new-audits/shared/types.ts";
 import type {Audit} from "@/pages/audits/shared/types.ts";
+import type {Report} from "@/pages/audit-edit/shared/types.ts";
+import {Description} from "@/components/Description.tsx";
 
 export const AuditItem = () => {
     const auditValue = useLoaderData<Audit>();
+
+    const fetcher = useFetcher<Report>();
 
     const columns = [
         {title: "Название объекта", value: auditValue.object.name},
@@ -24,11 +28,18 @@ export const AuditItem = () => {
         [auditValue.results]
     )
 
+    const saveChange = async (data: { [name: string]: string | null }) => {
+        if (Object.keys(data).length) {
+            const formData = new FormData();
+            formData.set("editState", JSON.stringify({id: auditValue.id, ...data,}));
+
+            await fetcher.submit(formData, {method: "PATCH"});
+        }
+    }
+
 
     return (
-        <div>
-            {/*<pre>{JSON.stringify(auditValue, null, 2)}</pre>*/}
-            {/*<pre>{JSON.stringify(reports, null, 2)}</pre>*/}
+        <>
             <TableContainer component={Paper}>
                 <Table sx={{minWidth: 650}} aria-label="objects table">
                     <TableBody>
@@ -51,14 +62,29 @@ export const AuditItem = () => {
                 title="Анализ по разделам стандарта ISO 23592:2021"
                 reports={reports.section as ReportItem[]}
             />
-            <p>{auditValue.sectionDescription}</p>
+
+            <Description
+                name="sectionDescription"
+                value={auditValue.sectionDescription}
+                saveChange={saveChange}
+            />
 
             <Chart
                 title="Анализ по категориям СХ-системы"
                 reports={reports.category as ReportItem[]}
             />
-            <p>{auditValue.categoryDescription}</p>
-            <p>{auditValue.reportDescription}</p>
-        </div>
+
+            <Description
+                name="categoryDescription"
+                value={auditValue.categoryDescription}
+                saveChange={saveChange}
+            />
+
+            <Description
+                name="reportDescription"
+                value={auditValue.reportDescription}
+                saveChange={saveChange}
+            />
+        </>
     );
 }

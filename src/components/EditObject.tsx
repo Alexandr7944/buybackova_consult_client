@@ -5,15 +5,16 @@ import React from "react";
 type EditObjectProps = {
     form: Partial<AuditableObject>,
     columns: Array<{ title: string, value: string }>,
+    title?: string,
     handleChange: (key: keyof AuditableObject) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
     handleClose: () => void,
     handleSubmit: () => void,
 };
 
-export const EditObject: React.FC<EditObjectProps> = ({handleClose, handleSubmit, columns, form, handleChange}) => {
+export const EditObject: React.FC<EditObjectProps> = ({handleClose, handleSubmit, columns, form, handleChange, title}) => {
     return (
         <Dialog open={true} onClose={handleClose} fullWidth maxWidth="sm">
-            <DialogTitle>Добавить объект</DialogTitle>
+            <DialogTitle>{title ?? 'Редактирование объекта'}</DialogTitle>
             <DialogContent dividers>
                 {
                     columns.map(({title, value}) => (

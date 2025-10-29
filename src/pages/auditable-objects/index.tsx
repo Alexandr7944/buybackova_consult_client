@@ -114,6 +114,7 @@ export const AuditableObjects: React.FC = () => {
 
             {openCreateForm &&
                 <EditObject
+                    title="Добавить объект"
                     handleClose={handleClose}
                     handleSubmit={createObject}
                     columns={columns.filter(({value}) => value !== 'action')}
