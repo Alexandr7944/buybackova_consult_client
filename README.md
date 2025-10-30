@@ -1,73 +1,121 @@
-# React + TypeScript + Vite
+# Buybackova Consult Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Клиентское приложение SPA на React + Vite + TypeScript с маршрутизацией через React Router v6.4+, Material UI для UI-компонентов и Reduxjs Toolkit для управления аутентификацией.
 
-Currently, two official plugins are available:
+## Содержание
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Особенности
+- Технологический стек
+- Структура проекта
+- Требования
+- Установка и запуск
+- Скрипты
+- Переменные окружения
+- Роутинг, защита маршрутов и роли
+- Работа с данными
+- Сборка и деплой
+- Настройки сервера (history fallback)
+- Тестирование (ручное)
+- Траблшутинг
 
-## React Compiler
+## Особенности
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Современный стек: Vite, React, TypeScript, Material UI.
+- Клиентский роутинг с data APIs (loaders/actions) и ErrorBoundary/NotFound страницами.
+- Защита маршрутов (guard) с проверкой авторизации и ролей пользователя, поддержка админских страниц.
+- Ленивая подгрузка страниц (route-level code splitting).
+- Удобные страницы ошибок и "404", адаптированные под светлую тему.
 
-## Expanding the ESLint configuration
+## Технологический стек
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19
+- TypeScript
+- Vite
+- React Router v7.9+
+- Material UI (@mui/material, @mui/icons-material)
+- Reduxjs Toolkit для auth (src/store/useAuthStore.ts)
+- date-fns
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Установка и запуск
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1) Установить зависимости:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- npm install
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2) Запустить dev-сервер:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- npm run dev
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3) Открыть в браузере адрес, показанный Vite (по умолчанию http://localhost:5173).
+
+## Скрипты
+
+- dev — запуск dev-сервера Vite
+- build — сборка в production (папка dist)
+- preview — предпросмотр собранного проекта локально
+
+## Переменные окружения
+
+- VITE_DEV_SERVER_PATH
+- VITE_SERVER_PATH
+- VITE_PRODUCT_PATH
+
+## Роутинг, защита маршрутов и роли
+
+Маршруты описаны в src/router/RoutesList.tsx и создаются через createBrowserRouter. Используется loader withAuth для проверки авторизации и ролей.
+
+Паттерн использования:
+- Для защищённых страниц: loader: withAuth({ requireAuth: true, roles: ['user', 'admin'] })
+- Для админских страниц: loader: withAuth({ requireAuth: true, roles: ['admin'] })
+
+Логика:
+
+- Если пользователь не авторизован и requireAuth=true — выполняется redirect на страницу логина (/auth/login).
+- Если роль не подходит — возвращается 403 (или redirect на главную, по вашему выбору), что обрабатывается ErrorBoundary.
+
+Синхронизация user в сторе:
+
+- В loader нельзя работать со стором. Возвращайте сериализуемые данные пользователя из withAuth.
+- В RootLayout читайте user из useRouteLoaderData("auth") и синхронизируйте стор в useEffect: setUser(user) или clearUser при отсутствии.
+
+## Работа с данными
+
+- API-утилиты: src/shared/api.ts
+- Типы домена: src/pages/*/shared/types.ts
+- Пример отправки данных: через useFetcher из React Router (см. AuditItem.tsx — PATCH по FormData)
+
+## Сборка и деплой
+
+Создать production-сборку:
+
+- npm run build
+
+Деплойте содержимое папки dist.
+
+Если приложение размещается не в корне домена, задайте правильный base/basename:
+
+- В vite.config.ts — base в зависимости от режима (mode):
+    - base: isProd ? '/subpath/' : '/'
+- В RoutesList.tsx — basename для createBrowserRouter:
+    - const basename = import.meta.env.MODE === 'production' ? import.meta.env.VITE_PRODUCT_PATH : undefined
+
+## Настройки сервера (history fallback)
+
+Для корректной работы SPA при обновлении страницы на вложенном маршруте настройте history API fallback:
+
+- Nginx:
+  location / { try_files $uri $uri/ /index.html; }
+  location /assets/ { alias /path/to/dist/assets/; add_header Cache-Control "public, max-age=31536000, immutable"; }
+
+Важно: не переписывайте запросы к реальным статическим ассетам (dist/assets/*), иначе получите MIME-ошибки при загрузке модульных скриптов.
+
+## Тестирование (ручное)
+
+- Проверяйте переходы по защищённым маршрутам будучи авторизованным/неавторизованным.
+- Проверяйте редиректы и 403 для ролей без доступа.
+- Открывайте глубокие ссылки (например /audit/123) напрямую — страница должна загружаться.
+- Страницы ошибок: ErrorBoundary должен показывать детали по toggle, NotFound — дружественный 404.
+
+Поддержка
+
+- Вопросы и баги создавайте в issue-трекере репозитория или сообщайте ответственному разработчику.

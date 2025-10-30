@@ -1,15 +1,15 @@
-import {useFetcher, useLoaderData} from "react-router-dom";
-import {Breadcrumbs, Link, Paper, TableContainer, Table, TableBody, TableRow, TableCell, Divider} from "@mui/material";
-import HomeIcon from '@mui/icons-material/Home';
+import {useFetcher, useLoaderData, useNavigate} from "react-router-dom";
+import {Paper, TableContainer, Table, TableBody, TableRow, TableCell, Divider, Button} from "@mui/material";
 import {useMemo,} from "react";
 import {format} from "date-fns";
 import {Chart} from "@/components/maturityLevel/Chart.tsx";
 import type {Audit, Report, ReportItem} from "@/pages/audits/shared/types.ts";
 import {Description} from "@/components/Description.tsx";
+import {BreadcrumbsRow} from "@/components/BreadcrumbsRow.tsx";
 
 export const AuditItem = () => {
     const auditValue = useLoaderData<Audit>();
-
+    const navigate = useNavigate();
     const fetcher = useFetcher<Report>();
 
     const columns = [
@@ -39,31 +39,21 @@ export const AuditItem = () => {
 
     return (
         <>
-            <Breadcrumbs
-                aria-label="breadcrumb"
-                className="no-print"
-                sx={{paddingBottom: 2}}
-            >
-                <Link
-                    underline="hover"
-                    sx={{display: 'flex', alignItems: 'center'}}
-                    color="inherit"
-                    href="/"
-                >
-                    <HomeIcon sx={{mr: 0.5}} fontSize="inherit"/>
-                    Объекты
-                </Link>
-                <Link
-                    underline="hover"
-                    sx={{display: 'flex', alignItems: 'center'}}
-                    color="inherit"
-                    href={`/object/${auditValue.objectId}`}
-                >
-                    Аудиты
-                </Link>
-            </Breadcrumbs>
+            <BreadcrumbsRow
+                name="Протокол аудита"
+                links={[{href: `/object/${auditValue.objectId}`, name: 'Аудиты'}]}
+            />
 
-            <TableContainer component={Paper} sx={{marginBottom: 8}}>
+            <Button
+                className="no-print"
+                variant="outlined"
+                color="primary"
+                onClick={() => navigate(`/audit/${auditValue.id}/edit`)}
+            >
+                Редактировать
+            </Button>
+
+            <TableContainer component={Paper} sx={{marginBottom: 8, marginTop: 3}}>
                 <Table sx={{minWidth: 650}} aria-label="objects table">
                     <TableBody>
                         {

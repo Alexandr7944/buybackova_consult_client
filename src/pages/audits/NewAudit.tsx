@@ -4,6 +4,7 @@ import {Box, Container, Typography} from "@mui/material";
 import {MaturityLevelInput} from "@/components/maturityLevel/MaturityLevelInput";
 import type {Section, Report} from "./shared/types";
 import type {Audit} from "@/pages/audits/shared/types.ts";
+import {BreadcrumbsRow} from "@/components/BreadcrumbsRow.tsx";
 
 export const NewAudit: React.FC = () => {
     const sections = useLoaderData() as Section[];
@@ -33,19 +34,25 @@ export const NewAudit: React.FC = () => {
     }
 
     return (
-        <Container maxWidth="lg" sx={{py: 4}}>
-            {/*<pre>{JSON.stringify(audit, null, 2)}</pre>*/}
-            <Typography variant="h5" component="h1">
-                Уровень клиентского опыта
-            </Typography>
+        <>
+            <BreadcrumbsRow
+                name="Новый аудит"
+                links={[{href: `/object/${audit.objectId}`, name: 'Аудиты'}]}
+            />
+            <Container maxWidth="lg" sx={{py: 4}}>
+                {/*<pre>{JSON.stringify(audit, null, 2)}</pre>*/}
+                <Typography variant="h5" component="h1">
+                    Уровень клиентского опыта
+                </Typography>
 
-            <Box>
-                <MaturityLevelInput
-                    sections={sections}
-                    audit={audit as Audit}
-                    submitForm={submitForm}
-                />
-            </Box>
-        </Container>
+                <Box>
+                    <MaturityLevelInput
+                        sections={sections}
+                        audit={audit as Audit}
+                        submitForm={submitForm}
+                    />
+                </Box>
+            </Container>
+        </>
     )
 };

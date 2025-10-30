@@ -4,6 +4,7 @@ import {Box, Container, Paper, Stack, Typography} from "@mui/material";
 import {MaturityLevelInput} from "@/components/maturityLevel/MaturityLevelInput";
 import type {Section, Report} from "./shared/types";
 import type {Audit} from "@/pages/audits/shared/types.ts";
+import {BreadcrumbsRow} from "@/components/BreadcrumbsRow.tsx";
 
 export const AuditEdit: React.FC = () => {
     const [sections, audit] = useLoaderData<[Section[], Audit]>();
@@ -19,7 +20,13 @@ export const AuditEdit: React.FC = () => {
     }
 
     return (
-        <Container maxWidth="lg" sx={{py: 4}}>
+        <>
+            <BreadcrumbsRow
+                name="Редктирование аудита"
+                links={[{href: `/object/${audit.objectId}`, name: 'Аудиты'}]}
+            />
+
+            <Container maxWidth="lg" sx={{py: 4}}>
             {/*<pre>{JSON.stringify(sections, null, 2)}</pre>*/}
             {/*<pre>{JSON.stringify(audit, null, 2)}</pre>*/}
             <Paper elevation={0} sx={{mb: 3, backgroundColor: 'transparent'}}>
@@ -43,5 +50,6 @@ export const AuditEdit: React.FC = () => {
                 />
             </Box>
         </Container>
+        </>
     )
 };
