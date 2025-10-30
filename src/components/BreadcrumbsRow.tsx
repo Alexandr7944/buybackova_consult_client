@@ -1,4 +1,5 @@
-import {Breadcrumbs, Link, Typography} from "@mui/material";
+import {Breadcrumbs, Typography} from "@mui/material";
+import {Link as RouterLink} from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import type {FC} from "react";
 
@@ -17,32 +18,19 @@ export const BreadcrumbsRow: FC<BreadcrumbsRowProps> = ({links, name}) => {
             className="no-print"
             sx={{paddingBottom: 2}}
         >
-            <Link
-                underline="hover"
-                sx={{display: 'flex', alignItems: 'center'}}
-                color="inherit"
-                href="/"
-            >
+            <RouterLink to="/" className="flex items-center">
                 <HomeIcon sx={{mr: 0.5}} fontSize="inherit"/>
                 Объекты
-            </Link>
+            </RouterLink>
             {
                 links.map(({href, name}) => (
-                    <Link
-                        key={href}
-                        underline="hover"
-                        sx={{display: 'flex', alignItems: 'center'}}
-                        color="inherit"
-                        href={href}
-                    >
+                    <RouterLink key={href} to={href}>
                         {name}
-                    </Link>
+                    </RouterLink>
                 ))
             }
 
-            <Typography
-                sx={{color: 'text.primary', display: 'flex', alignItems: 'center'}}
-            >
+            <Typography sx={{color: 'text.primary', display: 'flex', alignItems: 'center'}}>
                 {name}
             </Typography>
         </Breadcrumbs>
