@@ -50,7 +50,7 @@ export const Header: FC = () => {
 
     const links = [
         {name: "Главная", to: "../"},
-        {name: "О нас", to: "/about"},
+        {name: "Об авторах методологии", to: "/about"},
         {name: "Услуги", to: "/services"},
         {name: "Контакты", to: "/contacts"},
         ...(user?.roles.includes('admin') ? [{name: "Пользователи", to: "/admin/users"}] : [])

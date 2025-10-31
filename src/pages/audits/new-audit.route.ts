@@ -1,6 +1,6 @@
 import type {ActionFunctionArgs, LoaderFunctionArgs} from "react-router-dom";
 import {NewAudit} from "@/pages/audits/NewAudit.tsx";
-import {fetchSections, postReport} from "@/pages/audits/shared/audits.api.ts";
+import {fetchSections, createAudit} from "@/pages/audits/shared/audits.api.ts";
 
 export const Component = NewAudit;
 
@@ -19,5 +19,5 @@ export async function action({request}: ActionFunctionArgs) {
         });
     }
 
-    return postReport(state, request.signal);
+    return createAudit(state, request.signal);
 }

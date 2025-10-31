@@ -3,20 +3,8 @@ import {LevelSelect} from "./LevelSelect.tsx";
 import type {Row, Section} from "@/pages/audits/shared/types.ts";
 import type {Audit} from "@/pages/audits/shared/types.ts";
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    Button,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography,
-    Paper,
-    TextField,
+    Accordion, AccordionDetails, AccordionSummary, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    Typography, Paper, TextField,
 } from "@mui/material";
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 
@@ -86,9 +74,6 @@ export const MaturityLevelInput: React.FC<MaturityLevelProps> = ({sections, audi
 
         if (Object.keys(value).length > 1)
             submitForm(value);
-
-        if (!audit.id)
-            navigate(`/object/${audit.objectId}`)
     };
 
     const showReport = () => {
@@ -98,16 +83,8 @@ export const MaturityLevelInput: React.FC<MaturityLevelProps> = ({sections, audi
 
     return (
         <Box mt={3}>
-            <Box
-                display="grid"
-                // gridTemplateColumns={{xs: "1fr", sm: "1fr 1fr"}}
-                gap={4}
-                mb={8}
-            >
-                <LocalizationProvider
-                    dateAdapter={AdapterDateFns}
-                    adapterLocale={ru}
-                >
+            <Box display="grid" gap={4} mb={8}>
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ru}>
                     <DatePicker
                         label='Дата проведения аудита'
                         value={date}
@@ -139,7 +116,8 @@ export const MaturityLevelInput: React.FC<MaturityLevelProps> = ({sections, audi
                             {title.map((t, i) => (
                                 <TableCell key={t} sx={{
                                     textAlign:     i ? 'end' : 'center',
-                                    textTransform: "uppercase"
+                                    textTransform: "uppercase",
+                                    fontWeight:    'bold'
                                 }}>
                                     {t}
                                 </TableCell>

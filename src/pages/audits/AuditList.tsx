@@ -1,23 +1,11 @@
 import {useLoaderData, useNavigate} from "react-router-dom";
-import {
-    Button,
-    IconButton,
-    Paper,
-    Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography
-} from "@mui/material";
+import {Button, Tooltip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 import type {AuditableObject} from "@/pages/audits/shared/types.ts";
 import type {Audit} from "@/pages/audits/shared/types.ts";
 import {format} from "date-fns";
 import EditIcon from '@mui/icons-material/edit';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-// import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteIcon from '@mui/icons-material/delete';
+import {httpJson} from "@/shared/api.ts";
 
 export const AuditList = () => {
     const auditedObject = useLoaderData<AuditableObject>();
@@ -35,14 +23,25 @@ export const AuditList = () => {
         navigate(`/audit/${id}/edit`);
     }
 
+    const deleteAudit = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
+        e.stopPropagation();
+        const res = await httpJson(`/audits/${id}`, {method: 'DELETE'});
+        console.log(res)
+    }
+
     const getCellValue = (row: Audit, key: string) => {
         if (key === 'action') {
             return (
-                <Stack direction="row" justifyContent="end" alignItems="center" gap={2}>
-                    <IconButton onClick={e => e.stopPropagation()}> <ContentCopyIcon/> </IconButton>
-                    <IconButton onClick={e => editAudit(e, row.id)}> <EditIcon/> </IconButton>
-                    {/*<IconButton onClick={e => e.stopPropagation()}> <DeleteIcon/> </IconButton>*/}
-                </Stack>
+                <>
+                    <Tooltip title="Редактировать аудит" placement="top">
+                        <IconButton onClick={e => editAudit(e, row.id)}>
+                            <EditIcon/>
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Удалить аудит" placement="top">
+                        <IconButton onClick={e => deleteAudit(e, row.id)}> <DeleteIcon/> </IconButton>
+                    </Tooltip>
+                </>
             );
         }
         if (key === 'date') {
@@ -67,7 +66,7 @@ export const AuditList = () => {
                     color="primary"
                     onClick={() => navigate(`/audit/${auditedObject.id}/create`)}
                 >
-                    Провести аудит
+                    Пройти аудит
                 </Button>
             </Stack>
 
@@ -77,7 +76,7 @@ export const AuditList = () => {
                         <TableHead>
                             <TableRow>
                                 {columns.map(({title, value}) => (
-                                    <TableCell key={value}>{title}</TableCell>
+                                    <TableCell key={value} sx={{fontWeight: 'bold', fontSize: '1rem'}}>{title}</TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>

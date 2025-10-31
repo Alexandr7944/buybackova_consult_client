@@ -1,5 +1,5 @@
 import {httpJson} from "@/shared/api.ts";
-import type {AuditableObject, Section} from "@/pages/audits/shared/types.ts";
+import type {Audit, AuditableObject, Section} from "@/pages/audits/shared/types.ts";
 
 export function fetchSections(signal?: AbortSignal): Promise<Section[]> {
     return httpJson<Section[]>("/maturity-level", {signal});
@@ -9,21 +9,25 @@ export function fetchAuditItem(id: number): Promise<any> {
     return httpJson(`/audits/${id}`);
 }
 
-export function postReport(stateJson: string, signal?: AbortSignal): Promise<Report> {
-    return httpJson<Report>("/audits", {
+export function createAudit(stateJson: string, signal?: AbortSignal): Promise<Audit> {
+    return httpJson<Audit>("/audits", {
         method: "POST",
         body:   stateJson,
         signal,
     });
 }
 
-export function updateAudit(stateJson: string, signal?: AbortSignal): Promise<Report> {
+export function updateAudit(stateJson: string, signal?: AbortSignal): Promise<Audit> {
     const id = JSON.parse(stateJson).id;
-    return httpJson<Report>(`/audits/${id}`, {
+    return httpJson<Audit>(`/audits/${id}`, {
         method: "PATCH",
         body:   stateJson,
         signal,
     });
+}
+
+export function fetchUsers(signal?: AbortSignal): Promise<AuditableObject[]> {
+    return httpJson<AuditableObject[]>("/users", {signal});
 }
 
 export function fetchAuditableObjects(signal?: AbortSignal): Promise<AuditableObject[]> {

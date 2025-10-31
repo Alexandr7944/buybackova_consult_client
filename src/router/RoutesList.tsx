@@ -134,8 +134,15 @@ export const routes: RouteObject[] = [
             {
                 path: "/about",
                 lazy: async () => {
-                    const mod = await import("@/pages/About");
-                    return {Component: mod.About};
+                    const mod = await import("@/pages/AboutUs");
+                    return {Component: mod.AboutUs};
+                },
+            },
+            {
+                path: "/services",
+                lazy: async () => {
+                    const mod = await import("@/pages/Services");
+                    return {Component: mod.Services};
                 },
             },
             {

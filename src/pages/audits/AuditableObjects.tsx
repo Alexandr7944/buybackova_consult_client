@@ -1,24 +1,12 @@
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Button,
-    Stack,
-    Typography,
-    Paper,
-    IconButton
-} from "@mui/material";
+import {Table, Tooltip, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Stack, Typography, Paper, IconButton} from "@mui/material";
 import EditIcon from '@mui/icons-material/edit';
-import React from "react";
+import React, {useMemo} from "react";
 import type {AuditableObject} from "@/pages/audits/shared/types.ts";
 import {useFetcher, useLoaderData, useNavigate} from "react-router-dom";
 import {EditObject} from "@/components/EditObject.tsx";
 
 export const AuditableObjects: React.FC = () => {
-    const objects = useLoaderData() as AuditableObject[];
+    const [objects, users] = useLoaderData<[AuditableObject[], { id: number, name: string }[]]>();
     const fetcher = useFetcher<AuditableObject>();
     const navigate = useNavigate();
 
@@ -32,10 +20,6 @@ export const AuditableObjects: React.FC = () => {
         setForm({});
     };
 
-    const handleChange = (field: keyof AuditableObject) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setForm(prev => ({...prev, [field]: e.target.value}));
-    };
-
     const createObject = async () => {
         const formData = new FormData();
         formData.set("state", JSON.stringify(form));
@@ -44,11 +28,18 @@ export const AuditableObjects: React.FC = () => {
         handleClose();
     };
 
-    const columns = [
-        {title: 'Название', value: 'name'},
-        {title: 'Адрес', value: 'address'},
-        {title: '', value: 'action'},
-    ];
+    const columns = useMemo(() => {
+        const items = [
+            {title: 'Название', value: 'name'},
+            {title: 'Адрес', value: 'address'},
+            {title: '', value: 'action'},
+        ];
+
+        if (users.length > 0)
+            items.splice(2, 0, {title: 'Заказчик', value: 'ownerId'})
+
+        return items;
+    }, []);
 
     const handleEditForm = async (e: React.MouseEvent<HTMLButtonElement>, object: AuditableObject) => {
         e.stopPropagation();
@@ -63,6 +54,29 @@ export const AuditableObjects: React.FC = () => {
 
         handleClose();
     };
+
+    const getCellValue = (row: AuditableObject, column: string) => {
+        if (column === 'action') {
+            return (
+                <Stack direction="row" justifyContent="end" alignItems="center" gap={2}>
+                    <Button> Аудиты </Button>
+                    <Button onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/audit/${row.id}/create`)
+                    }}> Пройти аудит </Button>
+                    <Tooltip title="Редактировать объект" placement="top">
+                        <IconButton aria-label="edit" onClick={(e) => handleEditForm(e, row)}>
+                            <EditIcon/>
+                        </IconButton>
+                    </Tooltip>
+                </Stack>
+            )
+        } else if (column === 'ownerId') {
+            return users.find((user) => user.id === +row.ownerId)?.name || '';
+        }
+
+        return row[column as keyof AuditableObject].toString();
+    }
 
     return (
         <>
@@ -80,7 +94,9 @@ export const AuditableObjects: React.FC = () => {
                             <TableHead>
                                 <TableRow>
                                     {columns.map(({title, value}) => (
-                                        <TableCell key={value}>{title}</TableCell>
+                                        <TableCell key={value} sx={{fontWeight: 'bold', fontSize: '1rem'}}>
+                                            {title}
+                                        </TableCell>
                                     ))}
                                 </TableRow>
                             </TableHead>
@@ -91,19 +107,10 @@ export const AuditableObjects: React.FC = () => {
                                         sx={{'&:last-child td, &:last-child th': {border: 0}, cursor: 'pointer'}}
                                         onClick={() => navigate(`/object/${row.id}`)}
                                     >
-                                        {columns.map(({value}) => (
-                                            <TableCell key={value}>
-                                                {
-                                                    value === 'action'
-                                                        ? <Stack direction="row" justifyContent="end" alignItems="center" gap={2}>
-                                                            <IconButton aria-label="edit" onClick={(e) => handleEditForm(e, row)}>
-                                                                <EditIcon/>
-                                                            </IconButton>
-                                                        </Stack>
-                                                        : row[value as keyof AuditableObject].toString()
-                                                }
-                                            </TableCell>
-                                        ))}
+                                        {
+                                            columns.map(({value}) => (
+                                                <TableCell key={value}>{getCellValue(row, value)}</TableCell>))
+                                        }
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -117,9 +124,9 @@ export const AuditableObjects: React.FC = () => {
                     title="Добавить объект"
                     handleClose={handleClose}
                     handleSubmit={createObject}
-                    columns={columns.filter(({value}) => value !== 'action')}
+                    users={users}
                     form={form}
-                    handleChange={handleChange}
+                    setForm={setForm}
                 />
             }
 
@@ -127,9 +134,9 @@ export const AuditableObjects: React.FC = () => {
                 <EditObject
                     handleClose={handleClose}
                     handleSubmit={editObject}
-                    columns={columns.filter(({value}) => value !== 'action')}
+                    users={users}
                     form={form}
-                    handleChange={handleChange}
+                    setForm={setForm}
                 />
             }
         </>
