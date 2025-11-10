@@ -67,7 +67,7 @@ export const routes: RouteObject[] = [
                             return {
                                 Component: mod.Component,
                                 loader:    mod.loader,
-                                // action:    mod.action, // TODO: копирование аудитов
+                                action:    mod.action,
                             };
                         },
                     },
@@ -117,13 +117,13 @@ export const routes: RouteObject[] = [
                         loader:   withAuth({requireAuth: true, roles: ['admin']}),
                         children: [
                             {
-                                path: 'users',
+                                path: 'settings',
                                 lazy: async () => {
-                                    const mod = await import('@/pages/admin/users.route');
+                                    const mod = await import('@/pages/admin/settings.route');
                                     return {
                                         Component: mod.Component,
-                                        // loader:    mod.loader,
-                                        // action:    mod.action
+                                        loader:    mod.loader,
+                                        action:    mod.action
                                     };
                                 }
                             },
@@ -139,10 +139,10 @@ export const routes: RouteObject[] = [
                 },
             },
             {
-                path: "/services",
+                path: "/methodology",
                 lazy: async () => {
-                    const mod = await import("@/pages/Services");
-                    return {Component: mod.Services};
+                    const mod = await import("@/pages/Methodology.tsx");
+                    return {Component: mod.Methodology};
                 },
             },
             {

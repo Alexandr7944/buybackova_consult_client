@@ -1,6 +1,5 @@
 import React from "react";
 import {useLoaderData, useNavigate, useParams} from "react-router-dom";
-import {Box, Container, Typography} from "@mui/material";
 import {MaturityLevelInput} from "@/components/maturityLevel/MaturityLevelInput";
 import type {Section} from "./shared/types";
 import type {Audit} from "@/pages/audits/shared/types.ts";
@@ -37,19 +36,12 @@ export const NewAudit: React.FC = () => {
                 name="Новый аудит"
                 links={[{href: `/object/${audit.objectId}`, name: 'Аудиты'}]}
             />
-            <Container maxWidth="lg" sx={{py: 4}}>
-                <Typography variant="h5" component="h1">
-                    Уровень клиентского опыта
-                </Typography>
 
-                <Box>
-                    <MaturityLevelInput
-                        sections={sections}
-                        audit={audit as Audit}
-                        submitForm={submitForm}
-                    />
-                </Box>
-            </Container>
+            <MaturityLevelInput
+                sections={sections}
+                audit={audit as Audit}
+                submitForm={submitForm}
+            />
         </>
     )
 };

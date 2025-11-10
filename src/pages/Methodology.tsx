@@ -1,6 +1,6 @@
-import {Container, Typography, Card, CardContent, Box, Grid, useTheme, useMediaQuery} from "@mui/material";
+import { Typography, Card, CardContent, Box, Grid, useTheme, useMediaQuery} from "@mui/material";
 
-export const Services = () => {
+export const Methodology = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -27,8 +27,14 @@ export const Services = () => {
     ]
 
     return (
-        <Container maxWidth="lg" sx={{py: 4}}>
-            <Typography variant="h4" component="h3" gutterBottom align="center" sx={{fontWeight: 'bold', mb: 4}}>
+        <>
+            <Typography
+                variant="h4"
+                component="h3"
+                gutterBottom
+                align="center"
+                sx={{fontWeight: 'bold', mb: 4}}
+            >
                 Услуги
             </Typography>
 
@@ -76,7 +82,6 @@ export const Services = () => {
                                     position="relative"
                                     sx={{
                                         boxShadow:       "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                                        backgroundColor: "background.paper",
                                         zIndex:          1
                                     }}
                                 >
@@ -105,7 +110,7 @@ export const Services = () => {
                         {/* Header section */}
                         <Grid sx={{position: {xs: "static", md: "absolute"}, top: 16, left: 24}}>
                             <Typography variant="h6" color="error.main" textTransform="uppercase">
-                                Авторская модель*
+                                Авторская модель
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Развертывание стандарта ISO 23592:2021<br/>
@@ -116,6 +121,6 @@ export const Services = () => {
 
                 </CardContent>
             </Card>
-        </Container>
+        </>
     )
 }

@@ -49,6 +49,6 @@ export interface AuditableObject {
     id: string;
     name: string;
     address: string;
-    ownerId: string;
+    companyId: string;
     audits: Audit[];
 }

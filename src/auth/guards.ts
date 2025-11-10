@@ -26,10 +26,7 @@ export function withAuth(options: AuthOptions, next?: Loader): Loader {
         // Требуется авторизация
         if (options.requireAuth && !user) {
             const url = new URL(request.url);
-            const redirectUrl = new URL(
-                user ? "/auth/login" : "/auth/registration",
-                url.origin
-            );
+            const redirectUrl = new URL("/auth/registration", url.origin);
             redirectUrl.searchParams.set("redirect", url.pathname + url.search);
             throw redirectResponse(redirectUrl.pathname + redirectUrl.search, 302);
         }

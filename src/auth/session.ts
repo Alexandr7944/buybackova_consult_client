@@ -9,7 +9,7 @@ let cachedUser: User | null | undefined; // undefined = не загружен; n
  * Делает один запрос и кеширует результат; учитывает AbortSignal.
  */
 export async function getCurrentUser(signal?: AbortSignal): Promise<User | null> {
-    if (cachedUser !== undefined) return cachedUser;
+    if (cachedUser) return cachedUser;
 
     try {
         const res = await httpJson<User | null>('/auth/profile', {signal,});

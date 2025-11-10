@@ -1,10 +1,10 @@
-import {ImageList, ImageListItem, Box, Container, Typography, Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Divider, Chip, Avatar} from '@mui/material';
-import {CheckCircle, Person, Star, School, Business, Groups} from '@mui/icons-material';
+import {ImageList, ImageListItem,  Typography, Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Divider, } from '@mui/material';
+import {CheckCircle, Person, Star, Groups} from '@mui/icons-material';
 import img from '../assets/image/photo_2025-10-31_10-16-52.jpg';
 
 export const AboutUs = () => {
     return (
-        <Container maxWidth="lg" sx={{py: 4}}>
+        <>
             <Typography variant="h4" component="h3" gutterBottom align="center" sx={{fontWeight: 'bold', mb: 4}}>
                 О нашей команде
             </Typography>
@@ -110,11 +110,11 @@ export const AboutUs = () => {
                         </ListItem>
                     </List>
 
-                    <Typography sx={{mt: 2}}>
+                    <Typography sx={{mt: 2, mb: 2}}>
                         С 2014 года консультирую крупные компании, которые развивают качество и клиентский опыт системно на основе научного подхода.
                     </Typography>
 
-                    <Typography>
+                    <Typography >
                         Среди моих постоянных клиентов: компания контура РОСНАНО, производственные компании международного уровня, медицинские
                         клиники, образовательные учреждения.
                     </Typography>
@@ -160,22 +160,10 @@ export const AboutUs = () => {
 
                         <ListItem>
                             <ListItemIcon>
-                                <School color="primary"/>
+                                <Groups color="primary"/>
                             </ListItemIcon>
                             <ListItemText
-                                primary="Регулярный спикер конференций и преподаватель"
-                                secondary="“Здравница» (SKOLKOVO), Client Service Forum, Contact World Service Forum, Customer Experience Forum, RUVIERA, WOW Саммит и др. Преподаватель программ в Росбиотехе, СпбГУ."
-                            />
-                        </ListItem>
-
-                        <Divider component="li" sx={{my: 1}}/>
-
-                        <ListItem>
-                            <ListItemIcon>
-                                <Business color="primary"/>
-                            </ListItemIcon>
-                            <ListItemText
-                                primary="Член команды green field в «резиновых сапогах» крупной пищевой фабрики итальянского бренда FERRERO"/>
+                                primary="Партнер-преподаватель и аудитор органа по сертификации TÜV AUSTRIA по стандарту ISO 23592:2021 'Совершенство сервиса: принципы и модель'"/>
                         </ListItem>
 
                         <Divider component="li" sx={{my: 1}}/>
@@ -185,57 +173,30 @@ export const AboutUs = () => {
                                 <Groups color="primary"/>
                             </ListItemIcon>
                             <ListItemText
-                                primary="Партнер-преподаватель и аудитор органа по сертификации TÜV AUSTRIA по стандарту ISO 23592:2021 'Совершенство сервиса: принципы и модель'"/>
+                                primary="Член Технического комитета Росстандарта ТК-504 'Совершенство сервиса'"/>
                         </ListItem>
 
                         <Divider component="li" sx={{my: 1}}/>
 
-                        {/*<ListItem>*/}
-                        {/*    <ListItemIcon>*/}
-                        {/*        <Groups color="primary"/>*/}
-                        {/*    </ListItemIcon>*/}
-                        {/*    <ListItemText*/}
-                        {/*        primary="ПЧлен Технического комитета Росстандарта ТК-504 'Совершенство сервиса'"/>*/}
-                        {/*</ListItem>*/}
+                        <ListItem>
+                            <ListItemIcon>
+                                <Groups color="primary"/>
+                            </ListItemIcon>
+                            <ListItemText
+                                primary="Член жюри CX World Awards с 2023 года"/>
+                        </ListItem>
+                        <Divider component="li" sx={{my: 1}}/>
 
-                        {/*<Divider component="li" sx={{my: 1}}/>*/}
-
-                        {/*<ListItem>*/}
-                        {/*    <ListItemIcon>*/}
-                        {/*        <Groups color="primary"/>*/}
-                        {/*    </ListItemIcon>*/}
-                        {/*    <ListItemText*/}
-                        {/*        primary="Амбассадор и куратор премии 'СЕРВИС-СТРАНА' от Роскачества"/>*/}
-                        {/*</ListItem>*/}
-
-                        {/*<Divider component="li" sx={{my: 1}}/>*/}
-
-                        {/*<ListItem>*/}
-                        {/*    <ListItemIcon>*/}
-                        {/*        <Groups color="primary"/>*/}
-                        {/*    </ListItemIcon>*/}
-                        {/*    <ListItemText*/}
-                        {/*        primary="Член жюри CX World Awards с 2023 года"/>*/}
-                        {/*</ListItem>*/}
-                        {/*<Divider component="li" sx={{my: 1}}/>*/}
-
-                        {/*<ListItem>*/}
-                        {/*    <ListItemIcon>*/}
-                        {/*        <Groups color="primary"/>*/}
-                        {/*    </ListItemIcon>*/}
-                        {/*    <ListItemText*/}
-                        {/*        primary="Сертифицированный тренер по стендфордской программе дизайн-мышления d.standard"/>*/}
-                        {/*</ListItem>*/}
+                        <ListItem>
+                            <ListItemIcon>
+                                <Groups color="primary"/>
+                            </ListItemIcon>
+                            <ListItemText
+                                primary="Сертифицированный тренер по стендфордской программе дизайн-мышления d.standard"/>
+                        </ListItem>
                     </List>
-
-                    <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2}}>
-                        <Chip avatar={<Avatar>ТК</Avatar>} label="Член Технического комитета Росстандарта ТК-504 'Совершенство сервиса'"/>
-                        <Chip avatar={<Avatar>РК</Avatar>} label="Амбассадор и куратор премии 'СЕРВИС-СТРАНА' от Роскачества"/>
-                        <Chip avatar={<Avatar>CX</Avatar>} label="Член жюри CX World Awards с 2023 года"/>
-                        <Chip avatar={<Avatar>D</Avatar>} label="Сертифицированный тренер по стендфордской программе дизайн-мышления d.standard"/>
-                    </Box>
                 </CardContent>
             </Card>
-        </Container>
+        </>
     );
 };

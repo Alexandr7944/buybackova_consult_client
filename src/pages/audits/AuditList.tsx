@@ -1,15 +1,15 @@
-import {useLoaderData, useNavigate} from "react-router-dom";
+import {useFetcher, useLoaderData, useNavigate} from "react-router-dom";
 import {Button, Tooltip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 import type {AuditableObject} from "@/pages/audits/shared/types.ts";
 import type {Audit} from "@/pages/audits/shared/types.ts";
 import {format} from "date-fns";
 import EditIcon from '@mui/icons-material/edit';
 import DeleteIcon from '@mui/icons-material/delete';
-import {httpJson} from "@/shared/api.ts";
 
 export const AuditList = () => {
     const auditedObject = useLoaderData<AuditableObject>();
     const navigate = useNavigate();
+    const fetcher = useFetcher();
 
     const columns = [
         {title: 'Уровень зрелости', value: 'resultDescription',},
@@ -25,14 +25,15 @@ export const AuditList = () => {
 
     const deleteAudit = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
         e.stopPropagation();
-        const res = await httpJson(`/audits/${id}`, {method: 'DELETE'});
-        console.log(res)
+        const formData = new FormData();
+        formData.set("audit", JSON.stringify({id}));
+        await fetcher.submit(formData, {method: 'DELETE'});
     }
 
     const getCellValue = (row: Audit, key: string) => {
         if (key === 'action') {
             return (
-                <>
+                <Stack direction="row" justifyContent="flex-end" gap={3}>
                     <Tooltip title="Редактировать аудит" placement="top">
                         <IconButton onClick={e => editAudit(e, row.id)}>
                             <EditIcon/>
@@ -41,7 +42,7 @@ export const AuditList = () => {
                     <Tooltip title="Удалить аудит" placement="top">
                         <IconButton onClick={e => deleteAudit(e, row.id)}> <DeleteIcon/> </IconButton>
                     </Tooltip>
-                </>
+                </Stack>
             );
         }
         if (key === 'date') {

@@ -1,13 +1,14 @@
 import type {ActionFunctionArgs, LoaderFunctionArgs} from "react-router-dom";
 import {AuditableObjects} from "@/pages/audits/AuditableObjects.tsx";
-import {fetchAuditableObjects, fetchUsers, postNewAuditableObject, updateAuditableObject} from "@/pages/audits/shared/audits.api.ts";
+import {fetchAuditableObjects, postNewAuditableObject, updateAuditableObject} from "@/pages/audits/shared/audits.api.ts";
+import {fetchCompanies} from "@/pages/admin/shared/settings.api.ts";
 
 export const Component = AuditableObjects;
 
 export async function loader({request}: LoaderFunctionArgs) {
     return Promise.all([
         fetchAuditableObjects(request.signal),
-        fetchUsers(request.signal),
+        fetchCompanies(),
     ])
 }
 

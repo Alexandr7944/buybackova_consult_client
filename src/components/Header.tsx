@@ -51,9 +51,9 @@ export const Header: FC = () => {
     const links = [
         {name: "Главная", to: "../"},
         {name: "Об авторах методологии", to: "/about"},
-        {name: "Услуги", to: "/services"},
+        {name: "Методология", to: "/methodology"},
         {name: "Контакты", to: "/contacts"},
-        ...(user?.roles.includes('admin') ? [{name: "Пользователи", to: "/admin/users"}] : [])
+        ...(user?.roles.includes('admin') ? [{name: "Настройки", to: "/admin/settings"}] : [])
     ];
 
     const drawer = (
@@ -71,7 +71,8 @@ export const Header: FC = () => {
                 {!(user && user.username)
                     ? <Stack gap={2}>
                         <Button fullWidth variant="contained" aria-label="auth actions" onClick={() => navigate('/auth/login')}>Вход</Button>
-                        <Button fullWidth variant="contained" aria-label="auth actions" onClick={() => navigate('/auth/registration')}>Регистрация</Button>
+                        <Button fullWidth variant="contained" aria-label="auth actions"
+                                onClick={() => navigate('/auth/registration')}>Регистрация</Button>
                     </Stack>
                     : <Button
                         fullWidth
@@ -110,7 +111,13 @@ export const Header: FC = () => {
                     {/* Desktop links */}
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, gap: 2}}>
                         {links.map(l => (
-                            <Button key={l.to} color="inherit" component={RouterLink} to={l.to}>
+                            <Button
+                                key={l.to}
+                                color="inherit"
+                                component={RouterLink}
+                                to={l.to}
+                                className="text-nowrap"
+                            >
                                 {l.name}
                             </Button>
                         ))}

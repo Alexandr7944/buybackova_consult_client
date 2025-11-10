@@ -22,7 +22,7 @@ export const Registration: FC = () => {
             if (result.token)
                 localStorage.setItem('token', result.token);
 
-            navigate('../');
+            navigate('../about');
         } catch (e) {
             console.warn(e);
         }

@@ -71,10 +71,10 @@ export const AuditItem = () => {
                 </Table>
             </TableContainer>
 
-            <Chart
+            {reports.section && <Chart
                 title="Анализ по разделам стандарта ISO 23592:2021"
                 reports={reports.section as ReportItem[]}
-            />
+            />}
 
             <Description
                 name="sectionDescription"
@@ -84,10 +84,10 @@ export const AuditItem = () => {
 
             <Divider/>
 
-            <Chart
+            {reports.category && <Chart
                 title="Анализ по категориям СХ-системы"
                 reports={reports.category as ReportItem[]}
-            />
+            />}
 
             <Description
                 name="categoryDescription"

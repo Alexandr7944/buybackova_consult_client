@@ -26,8 +26,12 @@ export function updateAudit(stateJson: string, signal?: AbortSignal): Promise<Au
     });
 }
 
-export function fetchUsers(signal?: AbortSignal): Promise<AuditableObject[]> {
-    return httpJson<AuditableObject[]>("/users", {signal});
+export function removeAudit(audit: string, signal?: AbortSignal): Promise<void> {
+    const id: number = JSON.parse(audit).id;
+    return httpJson<void>(`/audits/${id}`, {
+        method: "DELETE",
+        signal,
+    });
 }
 
 export function fetchAuditableObjects(signal?: AbortSignal): Promise<AuditableObject[]> {

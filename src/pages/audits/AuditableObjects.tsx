@@ -6,13 +6,19 @@ import {useFetcher, useLoaderData, useNavigate} from "react-router-dom";
 import {EditObject} from "@/components/EditObject.tsx";
 
 export const AuditableObjects: React.FC = () => {
-    const [objects, users] = useLoaderData<[AuditableObject[], { id: number, name: string }[]]>();
+    const [objects, companies] = useLoaderData<[AuditableObject[], { id: number, name: string }[]]>();
     const fetcher = useFetcher<AuditableObject>();
     const navigate = useNavigate();
 
     const [openCreateForm, setOpenCreateForm] = React.useState(false);
     const [openEditForm, setOpenEditForm] = React.useState(false);
     const [form, setForm] = React.useState<Partial<AuditableObject>>({});
+    const [message, setMessage] = React.useState('');
+
+    const setAlert = (message: string) => {
+        setMessage(message);
+        setTimeout(() => setMessage(''), 3000);
+    }
 
     const handleClose = () => {
         setOpenCreateForm(false);
@@ -21,6 +27,11 @@ export const AuditableObjects: React.FC = () => {
     };
 
     const createObject = async () => {
+        if (!form.name || !form.address)
+            return setAlert("Заполните все поля");
+        if (companies.length > 0 && !form.companyId)
+            return setAlert("Выберите компанию");
+
         const formData = new FormData();
         formData.set("state", JSON.stringify(form));
         await fetcher.submit(formData, {method: "post"});
@@ -35,8 +46,8 @@ export const AuditableObjects: React.FC = () => {
             {title: '', value: 'action'},
         ];
 
-        if (users.length > 0)
-            items.splice(2, 0, {title: 'Заказчик', value: 'ownerId'})
+        if (companies.length > 0)
+            items.splice(2, 0, {title: 'Компания', value: 'companyId'})
 
         return items;
     }, []);
@@ -60,10 +71,13 @@ export const AuditableObjects: React.FC = () => {
             return (
                 <Stack direction="row" justifyContent="end" alignItems="center" gap={2}>
                     <Button> Аудиты </Button>
-                    <Button onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/audit/${row.id}/create`)
-                    }}> Пройти аудит </Button>
+                    <Button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/audit/${row.id}/create`)
+                        }}
+                        className="text-nowrap"> Пройти аудит </Button
+                    >
                     <Tooltip title="Редактировать объект" placement="top">
                         <IconButton aria-label="edit" onClick={(e) => handleEditForm(e, row)}>
                             <EditIcon/>
@@ -71,8 +85,9 @@ export const AuditableObjects: React.FC = () => {
                     </Tooltip>
                 </Stack>
             )
-        } else if (column === 'ownerId') {
-            return users.find((user) => user.id === +row.ownerId)?.name || '';
+        }
+        if (column === 'companyId') {
+            return companies.find((company) => company.id === +row.companyId)?.name || '';
         }
 
         return row[column as keyof AuditableObject].toString();
@@ -124,7 +139,8 @@ export const AuditableObjects: React.FC = () => {
                     title="Добавить объект"
                     handleClose={handleClose}
                     handleSubmit={createObject}
-                    users={users}
+                    companies={companies}
+                    message={message}
                     form={form}
                     setForm={setForm}
                 />
@@ -134,7 +150,7 @@ export const AuditableObjects: React.FC = () => {
                 <EditObject
                     handleClose={handleClose}
                     handleSubmit={editObject}
-                    users={users}
+                    companies={[]}
                     form={form}
                     setForm={setForm}
                 />
