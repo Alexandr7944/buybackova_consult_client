@@ -13,7 +13,7 @@ export const Registration: FC = () => {
             const {data: result} = await apiClient.post<{
                 user: { id: number, username: string },
                 token: string
-            }>('/auth/registration', {data: JSON.stringify(formData),})
+            }>('/auth/registration', formData)
 
             if (result.token)
                 localStorage.setItem('token', result.token);

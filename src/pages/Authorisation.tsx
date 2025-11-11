@@ -22,9 +22,7 @@ export const Authorisation: FC<{}> = () => {
             const {data: result} = await apiClient.post<{
                 user: { id: number, username: string },
                 token: string
-            }>('/auth/login', {
-                data: JSON.stringify(formData),
-            })
+            }>('/auth/login', formData)
 
             if (result.token)
                 localStorage.setItem('token', result.token);

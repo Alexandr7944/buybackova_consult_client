@@ -14,12 +14,12 @@ export async function fetchCompanies(): Promise<Company[]> {
 }
 
 export async function createCompany(stateJson: string): Promise<Company | null> {
-    return apiClient.post('/companies', {data: stateJson})
+    return apiClient.post('/companies', stateJson)
         .then(response => response.data);
 }
 
 export async function updateCompany(stateJson: string): Promise<Company | null> {
     const id: number = JSON.parse(stateJson).id;
-    return apiClient.patch(`/companies/${id}`, {data: stateJson})
+    return apiClient.patch(`/companies/${id}`, stateJson)
         .then(response => response.data);
 }

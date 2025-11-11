@@ -12,10 +12,7 @@ export async function fetchAuditItem(id: number): Promise<Audit> {
 }
 
 export async function createAudit(stateJson: string, signal?: AbortSignal): Promise<Audit> {
-    const response = await apiClient.post<Audit>("/audits", {
-        data: stateJson,
-        signal,
-    });
+    const response = await apiClient.post<Audit>("/audits", stateJson, {signal});
     return response.data;
 }
 
@@ -45,18 +42,12 @@ export async function fetchObject(objectId: number, signal?: AbortSignal): Promi
 }
 
 export async function postNewAuditableObject(stateJson: string, signal?: AbortSignal): Promise<void> {
-    const response = await apiClient.post<void>("/auditable-object", {
-        data: stateJson,
-        signal
-    });
+    const response = await apiClient.post<void>("/auditable-object", stateJson, {signal});
     return response.data;
 }
 
 export async function updateAuditableObject(stateJson: string, signal?: AbortSignal): Promise<void> {
     const id: number = JSON.parse(stateJson).id;
-    const response = await apiClient.patch<void>(`/auditable-object/${id}`, {
-        data: stateJson,
-        signal
-    });
+    const response = await apiClient.patch<void>(`/auditable-object/${id}`, stateJson, {signal});
     return response.data;
 }

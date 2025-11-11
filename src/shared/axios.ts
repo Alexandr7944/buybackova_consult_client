@@ -2,16 +2,13 @@ import axios from 'axios';
 import {getBaseUrl} from "@/shared/api.ts";
 import {clearSessionCache} from "@/auth/session.ts";
 
-// Создаем экземпляр Axios с базовыми настройками
 const apiClient = axios.create({
-    baseURL: getBaseUrl(), // Ваша функция getBaseUrl()
-    withCredentials: true, // Аналог credentials: "include"
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    baseURL:         getBaseUrl(),
+    withCredentials: true, // analogous credentials: "include"
+    headers:         {'Content-Type': 'application/json'},
 });
 
-// --- Глобальное управление обновлением (та же логика, что и раньше) ---
+// Globally manage token refresh (same logic as before)
 let isRefreshing = false;
 let failedQueue: Array<{ resolve: (value?: any) => void; reject: (reason?: any) => void; }> = [];
 
@@ -26,7 +23,7 @@ const processQueue = (error: any, token: string | null = null) => {
     failedQueue = [];
 };
 
-// --- Request Interceptor: Добавляем токен к каждому запросу ---
+// --- Request Interceptor: Add token to headers ---
 apiClient.interceptors.request.use(config => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -35,22 +32,26 @@ apiClient.interceptors.request.use(config => {
     return config;
 });
 
-// --- Response Interceptor: Обрабатываем 401 ошибку ---
+// --- Response Interceptor: Handle 401 errors and refresh token ---
 apiClient.interceptors.response.use(
-    // Этот блок вызывается для успешных ответов (2xx)
+    // Success response block (2xx)
     response => response,
 
     // Этот блок вызывается для ошибок (4xx, 5xx)
     async (error: Error | any) => {
         const originalRequest = error.config;
 
-        // Если это 401 ошибка и это не повторный запрос (чтобы избежать бесконечного цикла)
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // If this is a 401 error, and it's not a retry (to avoid an infinite loop)
+        if (
+            error.response?.status === 401
+            && error.response?.data?.message === 'Token expired'
+            && !originalRequest._retry
+        ) {
 
-            // Если обновление уже идет, добавляем запрос в очередь
+            // If a refresh is already in progress, add the request to the queue
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
-                    failedQueue.push({ resolve, reject });
+                    failedQueue.push({resolve, reject});
                 }).then(() => {
                     return apiClient(originalRequest); // Повторяем оригинальный запрос
                 }).catch(err => {
@@ -58,34 +59,30 @@ apiClient.interceptors.response.use(
                 });
             }
 
-            originalRequest._retry = true; // Помечаем запрос как повторный
+            originalRequest._retry = true; // Mark the request as a retry
             isRefreshing = true;
 
             try {
-                const refreshUrl = getBaseUrl() + '/auth/refresh';
-                await axios.post(refreshUrl, {}, { withCredentials: true }); // Запрос на обновление
-
-                // Предполагаем, что сервер возвращает новый токен в теле ответа
-                // (или он может быть установлен в HttpOnly cookie, что еще лучше)
-                const { data } = await axios.get(getBaseUrl() + '/auth/me', { withCredentials: true }); // Пример получения нового токена
+                // Refresh token
+                const {data} = await axios.get(getBaseUrl() + '/auth/refresh', {withCredentials: true});
                 const newToken = data.token;
                 localStorage.setItem("token", newToken);
 
                 processQueue(null, newToken);
 
-                // Повторяем оригинальный запрос, который упал с 401
+                // Retry the original request with the new token
                 return apiClient(originalRequest);
 
             } catch (refreshError) {
                 processQueue(refreshError, null);
-                clearSessionCache(); // Вызываем вашу функцию разлогина
+                await clearSessionCache();
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
             }
         }
 
-        // Для всех остальных ошибок просто пробрасываем их дальше
+        // For any other error, reject the promise and clear the queue
         return Promise.reject(error);
     }
 );
