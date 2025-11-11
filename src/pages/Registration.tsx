@@ -1,7 +1,7 @@
 import {type FC, type FormEvent, useState} from "react";
-import {httpJson} from "@/shared/api.ts";
 import {useNavigate} from "react-router-dom";
 import {Box, Button, Container, Paper, Stack, TextField, Typography} from "@mui/material";
+import apiClient from "@/shared/axios.ts";
 
 export const Registration: FC = () => {
     const [formData, setFormData] = useState({username: '', name: '', password: ''});
@@ -10,14 +10,10 @@ export const Registration: FC = () => {
         e.preventDefault();
 
         try {
-            const result = await httpJson<{
+            const {data: result} = await apiClient.post<{
                 user: { id: number, username: string },
                 token: string
-            }>('/auth/registration', {
-                method:  'POST',
-                body:    JSON.stringify(formData),
-                headers: {'Content-Type': 'application/json'}
-            })
+            }>('/auth/registration', {data: JSON.stringify(formData),})
 
             if (result.token)
                 localStorage.setItem('token', result.token);

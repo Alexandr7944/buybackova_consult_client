@@ -12,6 +12,7 @@ export type User = {
 
 type UserState = {
     user?: User;
+    isAdmin: boolean,
     isAuth: boolean,
     isLoading: boolean;
     error?: string | null;
@@ -19,6 +20,7 @@ type UserState = {
 
 const initialState: UserState = {
     user:      undefined,
+    isAdmin:   false,
     isAuth:    false,
     isLoading: false,
     error:     null,
@@ -30,6 +32,7 @@ const useAuthSlice = createSlice({
     reducers: {
         setUser(state, action: PayloadAction<User | undefined>) {
             state.user = action.payload;
+            state.isAdmin = action.payload?.roles.includes("admin") || false;
             state.isAuth = true;
             state.isLoading = false;
             state.error = null;
@@ -37,6 +40,7 @@ const useAuthSlice = createSlice({
 
         logout(state) {
             state.user = undefined;
+            state.isAdmin = false;
             state.isAuth = false;
             state.isLoading = false;
             state.error = null;

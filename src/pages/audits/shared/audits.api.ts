@@ -1,60 +1,62 @@
-import {httpJson} from "@/shared/api.ts";
+import apiClient from "@/shared/axios.ts";
 import type {Audit, AuditableObject, Section} from "@/pages/audits/shared/types.ts";
 
-export function fetchSections(signal?: AbortSignal): Promise<Section[]> {
-    return httpJson<Section[]>("/maturity-level", {signal});
+export async function fetchSections(signal?: AbortSignal): Promise<Section[]> {
+    const response = await apiClient.get<Section[]>("/maturity-level", {signal});
+    return response.data;
 }
 
-export function fetchAuditItem(id: number): Promise<any> {
-    return httpJson(`/audits/${id}`);
+export async function fetchAuditItem(id: number): Promise<Audit> {
+    const response = await apiClient.get<Audit>(`/audits/${id}`);
+    return response.data;
 }
 
-export function createAudit(stateJson: string, signal?: AbortSignal): Promise<Audit> {
-    return httpJson<Audit>("/audits", {
-        method: "POST",
-        body:   stateJson,
+export async function createAudit(stateJson: string, signal?: AbortSignal): Promise<Audit> {
+    const response = await apiClient.post<Audit>("/audits", {
+        data: stateJson,
         signal,
     });
+    return response.data;
 }
 
-export function updateAudit(stateJson: string, signal?: AbortSignal): Promise<Audit> {
+export async function updateAudit(stateJson: string, signal?: AbortSignal): Promise<Audit> {
     const id = JSON.parse(stateJson).id;
-    return httpJson<Audit>(`/audits/${id}`, {
-        method: "PATCH",
-        body:   stateJson,
+    const response = await apiClient.patch<Audit>(`/audits/${id}`, {
+        data: stateJson,
         signal,
     });
+    return response.data;
 }
 
-export function removeAudit(audit: string, signal?: AbortSignal): Promise<void> {
+export async function removeAudit(audit: string, signal?: AbortSignal): Promise<void> {
     const id: number = JSON.parse(audit).id;
-    return httpJson<void>(`/audits/${id}`, {
-        method: "DELETE",
-        signal,
-    });
+    const response = await apiClient.delete<void>(`/audits/${id}`, {signal,});
+    return response.data;
 }
 
-export function fetchAuditableObjects(signal?: AbortSignal): Promise<AuditableObject[]> {
-    return httpJson<AuditableObject[]>("/auditable-object", {signal});
+export async function fetchAuditableObjects(signal?: AbortSignal): Promise<AuditableObject[]> {
+    const response = await apiClient.get<AuditableObject[]>("/auditable-object", {signal});
+    return response.data;
 }
 
-export function fetchObject(objectId: number, signal?: AbortSignal): Promise<AuditableObject> {
-    return httpJson<AuditableObject>(`/auditable-object/${objectId}`, {signal});
+export async function fetchObject(objectId: number, signal?: AbortSignal): Promise<AuditableObject> {
+    const response = await apiClient.get<AuditableObject>(`/auditable-object/${objectId}`, {signal});
+    return response.data;
 }
 
-export function postNewAuditableObject(stateJson: string, signal?: AbortSignal): Promise<void> {
-    return httpJson<void>("/auditable-object", {
-        method: "POST",
-        body:   stateJson,
+export async function postNewAuditableObject(stateJson: string, signal?: AbortSignal): Promise<void> {
+    const response = await apiClient.post<void>("/auditable-object", {
+        data: stateJson,
         signal
     });
+    return response.data;
 }
 
-export function updateAuditableObject(stateJson: string, signal?: AbortSignal): Promise<void> {
+export async function updateAuditableObject(stateJson: string, signal?: AbortSignal): Promise<void> {
     const id: number = JSON.parse(stateJson).id;
-    return httpJson<void>(`/auditable-object/${id}`, {
-        method: "PATCH",
-        body:   stateJson,
+    const response = await apiClient.patch<void>(`/auditable-object/${id}`, {
+        data: stateJson,
         signal
     });
+    return response.data;
 }

@@ -41,9 +41,9 @@ export const Header: FC = () => {
     const handleMenuClose = () => setAnchorEl(null);
 
     const navigate = useNavigate();
-    const handleLogout = () => {
+    const handleLogout = async () => {
         handleMenuClose();
-        clearSessionCache();
+        await clearSessionCache();
         dispatch(logout());
         navigate('/auth/login');
     };

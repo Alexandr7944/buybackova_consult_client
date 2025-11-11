@@ -1,31 +1,41 @@
 import {type FC, type FormEvent, useState} from "react";
-import {httpJson} from "@/shared/api.ts";
 import {useNavigate} from "react-router-dom";
-import {Box, Button, Container, Paper, Stack, TextField, Typography} from "@mui/material";
+import {Box, Button, Container, Paper, Stack, TextField, Typography, Alert} from "@mui/material";
+import apiClient from "@/shared/axios.ts";
 
 export const Authorisation: FC<{}> = () => {
     const [formData, setFormData] = useState({username: '', password: ''});
     const navigate = useNavigate();
+    const [message, setMessage] = useState('');
 
+    const setAlert = (message: string) => {
+        setMessage(message);
+        setTimeout(() => setMessage(''), 5000);
+    };
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
+        if (!formData.username || !formData.password)
+            return setAlert('Все поля должны быть заполнены');
+
         try {
-            const result = await httpJson<{
+            const {data: result} = await apiClient.post<{
                 user: { id: number, username: string },
                 token: string
             }>('/auth/login', {
-                method:  'POST',
-                body:    JSON.stringify(formData),
-                headers: {'Content-Type': 'application/json'}
+                data: JSON.stringify(formData),
             })
 
             if (result.token)
                 localStorage.setItem('token', result.token);
 
-            navigate('../');
-        } catch (e) {
-            console.warn(e);
+            await navigate('../');
+        } catch (err: Error | any) {
+            if (err?.status === 401) {
+                setAlert('Неправильный логин или пароль');
+            }
+
+            console.warn(err);
         }
     };
 
@@ -35,6 +45,7 @@ export const Authorisation: FC<{}> = () => {
             sx={{display: 'flex', alignItems: 'center', minHeight: '100vh'}}
         >
             <Paper elevation={3} sx={{p: 3, width: '100%'}}>
+                {message && <Alert severity="error" sx={{mb: 2}}>{message}</Alert>}
                 <Typography component="h1" variant="h5" align="center" gutterBottom>
                     Войдите в свой аккаунт
                 </Typography>

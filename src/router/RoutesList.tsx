@@ -7,6 +7,7 @@ import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "@/hooks/hook.ts";
 import {logout, setUser, type User} from "@/store/useAuthStore.ts";
 import {Container} from "@mui/material";
+import {clearSessionCache} from "@/auth/session.ts";
 
 const basename = import.meta.env.MODE === "production"
     ? import.meta.env.VITE_PRODUCT_PATH
@@ -17,11 +18,16 @@ function RootLayout() {
     const savedUser = useAppSelector(state => state.useAuthStore.user);
     const dispatch = useAppDispatch();
 
+
     useEffect(() => {
-        if (user && user?.username !== savedUser?.username)
-            dispatch(setUser(user));
-        else if (!user)
-            dispatch(logout());
+        (async () => {
+            if (user && user?.username !== savedUser?.username) {
+                dispatch(setUser(user));
+            } else if (!user) {
+                await clearSessionCache();
+                dispatch(logout());
+            }
+        })();
     }, [user]);
 
     return (
@@ -72,7 +78,7 @@ export const routes: RouteObject[] = [
                         },
                     },
                     {
-                        path: '/audit',
+                        path:     '/audit',
                         children: [
                             {
                                 // show audit item by id

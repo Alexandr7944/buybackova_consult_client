@@ -5,11 +5,14 @@ import type {Audit} from "@/pages/audits/shared/types.ts";
 import {format} from "date-fns";
 import EditIcon from '@mui/icons-material/edit';
 import DeleteIcon from '@mui/icons-material/delete';
+import React from "react";
+import {useAppSelector} from "@/hooks/hook.ts";
 
 export const AuditList = () => {
     const auditedObject = useLoaderData<AuditableObject>();
     const navigate = useNavigate();
     const fetcher = useFetcher();
+    const isAdmin = useAppSelector((state) => state.useAuthStore.user && state.useAuthStore.isAdmin)
 
     const columns = [
         {title: 'Уровень зрелости', value: 'resultDescription',},
@@ -32,7 +35,7 @@ export const AuditList = () => {
 
     const getCellValue = (row: Audit, key: string) => {
         if (key === 'action') {
-            return (
+            return isAdmin ? (
                 <Stack direction="row" justifyContent="flex-end" gap={3}>
                     <Tooltip title="Редактировать аудит" placement="top">
                         <IconButton onClick={e => editAudit(e, row.id)}>
@@ -43,7 +46,7 @@ export const AuditList = () => {
                         <IconButton onClick={e => deleteAudit(e, row.id)}> <DeleteIcon/> </IconButton>
                     </Tooltip>
                 </Stack>
-            );
+            ) : '';
         }
         if (key === 'date') {
             return format((row.date || row.createdAt), 'dd.MM.yyyy');
