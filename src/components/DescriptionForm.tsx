@@ -8,7 +8,7 @@ type EditDescriptionProps = {
     onClose: () => void;
 }
 
-export const EditDescription: FC<EditDescriptionProps> = ({name, startValue, saveChange, onClose}) => {
+export const DescriptionForm: FC<EditDescriptionProps> = ({name, startValue, saveChange, onClose}) => {
     const [value, setValue] = useState<string | null>(startValue);
 
     const submit = async () => {
@@ -21,6 +21,7 @@ export const EditDescription: FC<EditDescriptionProps> = ({name, startValue, sav
     return (
         <TextareaAutosize
             minRows={3}
+            autoFocus
             placeholder="Добавьте описание"
             aria-label="audit description"
             style={{
@@ -33,12 +34,6 @@ export const EditDescription: FC<EditDescriptionProps> = ({name, startValue, sav
             value={value || ''}
             onChange={(event) => setValue(event.target.value)}
             onBlur={submit}
-            onKeyDown={async (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    await submit();
-                }
-            }}
         />
     )
 }

@@ -1,4 +1,4 @@
-import {EditDescription} from "@/components/EditDescription.tsx";
+import {DescriptionForm} from "@/components/DescriptionForm.tsx";
 import {Button, Stack, Box} from "@mui/material";
 import {type FC, useState} from "react";
 
@@ -25,17 +25,22 @@ export const Description: FC<DescriptionProps> = ({name, value, saveChange}) => 
     }
 
     return (
-        <Box sx={{marginTop: 4, marginBottom: 4}}>
+        <Box sx={{marginTop: 4, marginBottom: 4}}
+             className="px-4">
             {
                 isEdit
-                    ? <EditDescription
+                    ? <DescriptionForm
                         name={name}
                         startValue={value}
                         saveChange={submit}
                         onClose={() => setEdit(false)}
                     />
                     : <Stack spacing={3} alignItems="flex-start">
-                        <p>{value}</p>
+                        <Box>
+                            {value && value.split('\n').map((item, index) => (
+                                <p key={index}>{item}</p>
+                            ))}
+                        </Box>
                         <Button
                             className="no-print"
                             variant="outlined"
