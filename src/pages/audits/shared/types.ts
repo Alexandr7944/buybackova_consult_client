@@ -50,5 +50,6 @@ export interface AuditableObject {
     name: string;
     address: string;
     companyId: string;
+    auditCount: number;
     audits: Audit[];
 }

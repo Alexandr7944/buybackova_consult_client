@@ -133,13 +133,13 @@ export const routes: RouteObject[] = [
                     }
                 ]
             },
-            {
-                path: "/about",
-                lazy: async () => {
-                    const mod = await import("@/pages/AboutUs");
-                    return {Component: mod.AboutUs};
-                },
-            },
+            // {
+            //     path: "/about",
+            //     lazy: async () => {
+            //         const mod = await import("@/pages/AboutUs");
+            //         return {Component: mod.AboutUs};
+            //     },
+            // },
             {
                 path: "/methodology",
                 lazy: async () => {

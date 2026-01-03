@@ -6,9 +6,10 @@ type DescriptionProps = {
     name: string;
     value: string | null;
     saveChange: (data: { [key: string]: string | null }) => Promise<void>;
+    ref: React.RefObject<HTMLDivElement | null>
 }
 
-export const Description: FC<DescriptionProps> = ({name, value, saveChange}) => {
+export const Description: FC<DescriptionProps> = ({name, value, saveChange, ref}) => {
     const [isEdit, setEdit] = useState<boolean>(false);
     const submit = async (data: { [key: string]: string | null }) => {
         setEdit(false);
@@ -26,7 +27,8 @@ export const Description: FC<DescriptionProps> = ({name, value, saveChange}) => 
 
     return (
         <Box sx={{marginTop: 4, marginBottom: 4}}
-             className="px-4">
+             className="px-4"
+             ref={ref}>
             {
                 isEdit
                     ? <DescriptionForm

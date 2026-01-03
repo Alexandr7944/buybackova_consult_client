@@ -3,11 +3,12 @@ import ReactECharts from "echarts-for-react";
 import type {ReportItem} from "@/pages/audits/shared/types.ts";
 
 type Props = {
+    ref: React.Ref<ReactECharts>;
     reports: ReportItem[];
     title: string;
 };
 
-export const Chart = ({reports, title}: Props) => {
+export const Chart = ({ref, reports, title}: Props) => {
     const option = useMemo(
         () => ({
             radar:  {
@@ -62,6 +63,7 @@ export const Chart = ({reports, title}: Props) => {
                     },
                 },
             },
+            animation: false,
             series: [
                 {
                     type:  "radar",
@@ -95,8 +97,6 @@ export const Chart = ({reports, title}: Props) => {
                     },
                 },
             ],
-            // Дополнительные настройки цветовой палитры
-            color: ["#1890ff", "#52c41a", "#faad14"], // Палитра для нескольких серий
         }),
         [reports, title]
     );
@@ -105,11 +105,10 @@ export const Chart = ({reports, title}: Props) => {
         <div className="px-4">
             <h5 className="text-xl my-6">{title}</h5>
             <ReactECharts
+                ref={ref}
                 className="mt-6"
                 option={option}
                 style={{height: 400}}
-                // Динамическое обновление темы
-                theme={localStorage.getItem("theme") === "dark" ? "dark" : "light"}
             />
         </div>
     );

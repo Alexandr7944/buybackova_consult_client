@@ -14,17 +14,17 @@ export async function loader({request}: LoaderFunctionArgs) {
 
 export async function action({request}: ActionFunctionArgs) {
     const formData = await request.formData();
-    const state = formData.get("state");
-    const updateForm = formData.get("updateForm");
 
-    if (state) {
-        if (typeof state !== "string" || state.length === 0)
+    if (formData.has("createForm")) {
+        const createForm = formData.get("createForm");
+        if (typeof createForm !== "string" || createForm.length === 0)
             return handleError()
 
-        return postNewAuditableObject(state, request.signal);
+        return postNewAuditableObject(createForm, request.signal);
     }
 
-    if (updateForm) {
+    if (formData.has("updateForm")) {
+        const updateForm = formData.get("updateForm");
         if (typeof updateForm !== "string" || updateForm.length === 0)
             return handleError()
 

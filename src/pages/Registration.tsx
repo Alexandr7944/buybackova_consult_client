@@ -18,7 +18,7 @@ export const Registration: FC = () => {
             if (result.token)
                 localStorage.setItem('token', result.token);
 
-            navigate('../about');
+            navigate('../methodology');
         } catch (e) {
             console.warn(e);
         }

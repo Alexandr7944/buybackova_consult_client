@@ -1,4 +1,4 @@
-import {ImageList, ImageListItem,  Typography, Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Divider, } from '@mui/material';
+import {ImageList, ImageListItem, Typography, Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Divider,} from '@mui/material';
 import {CheckCircle, Person, Star, Groups} from '@mui/icons-material';
 import img from '../assets/image/photo_2025-10-31_10-16-52.jpg';
 
@@ -49,9 +49,9 @@ export const AboutUs = () => {
                     </List>
                     <ImageList
                         sx={{
-                            width: '100%',
-                            height: 'auto',
-                            margin: 0,
+                            width:    '100%',
+                            height:   'auto',
+                            margin:   0,
                             overflow: 'hidden'
                         }}
                         variant="quilted"
@@ -64,8 +64,8 @@ export const AboutUs = () => {
                                 alt="My team"
                                 loading="lazy"
                                 style={{
-                                    width: '100%',
-                                    height: 'auto',
+                                    width:     '100%',
+                                    height:    'auto',
                                     objectFit: 'cover'
                                 }}
                             />
@@ -114,7 +114,7 @@ export const AboutUs = () => {
                         С 2014 года консультирую крупные компании, которые развивают качество и клиентский опыт системно на основе научного подхода.
                     </Typography>
 
-                    <Typography >
+                    <Typography>
                         Среди моих постоянных клиентов: компания контура РОСНАНО, производственные компании международного уровня, медицинские
                         клиники, образовательные учреждения.
                     </Typography>

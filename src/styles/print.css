@@ -1,0 +1,70 @@
+/* styles/print.css */
+@media print {
+    body {
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+        background: #fff;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+
+    table {
+        page-break-inside: avoid;
+        border-collapse: collapse;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .printable-chart {
+        break-inside: avoid;
+        margin: 20px 0;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+    }
+
+    p {
+        orphans: 3;
+        widows: 3;
+    }
+}
+
+/* Стили для улучшения читаемости при печати */
+.print-only {
+    display: none;
+}
+
+@media print {
+    .print-only {
+        display: block;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}

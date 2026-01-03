@@ -9,5 +9,10 @@ export type Company = {
     users: {
         id: number;
         name: string;
-    }[]
+    }[],
+    objects: {
+        id: number;
+        name: string;
+        address: string;
+    }[],
 }

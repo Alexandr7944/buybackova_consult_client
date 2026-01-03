@@ -7,13 +7,13 @@ type EditObjectProps = {
     form: Partial<AuditableObject>,
     title?: string,
     message?: string,
+    loading: boolean,
     setForm: (object: Partial<AuditableObject>) => void;
     handleClose: () => void,
     handleSubmit: () => void,
 };
 
-export const EditObject: React.FC<EditObjectProps> = ({handleClose, handleSubmit, form, setForm, title, companies, message}) => {
-
+export const ObjectForm: React.FC<EditObjectProps> = ({handleClose, handleSubmit, form, setForm, title, companies, message, loading}) => {
     const handleChange = (data: Record<string, string | number | null>) => {
         setForm(({...form, ...data}));
     };
@@ -64,7 +64,9 @@ export const EditObject: React.FC<EditObjectProps> = ({handleClose, handleSubmit
             </DialogContent>
             <DialogActions sx={{padding: 3}}>
                 <Button onClick={handleClose}>Отмена</Button>
-                <Button onClick={handleSubmit} variant="contained">Сохранить</Button>
+                <Button onClick={handleSubmit} variant="contained" disabled={loading}>
+                    {loading ? 'Сохранение...' : 'Сохранить'}
+                </Button>
             </DialogActions>
         </Dialog>
     )

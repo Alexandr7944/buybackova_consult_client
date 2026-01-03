@@ -3,46 +3,91 @@ import EditIcon from '@mui/icons-material/edit';
 import React, {useMemo} from "react";
 import type {AuditableObject} from "@/pages/audits/shared/types.ts";
 import {useFetcher, useLoaderData, useNavigate} from "react-router-dom";
-import {EditObject} from "@/components/EditObject.tsx";
+import {ObjectForm} from "@/components/ObjectForm.tsx";
+import {RenderIf} from "@/components/RenderIf.tsx";
+import {SearchAndSort} from "@/components/ui/SearchAndSort.tsx";
+import {useAppSelector} from "@/hooks/hook.ts";
+
+type FormType = {
+    mode: 'create' | 'edit' | null;
+    data: Partial<AuditableObject> | null;
+}
 
 export const AuditableObjects: React.FC = () => {
     const [objects, companies] = useLoaderData<[AuditableObject[], { id: number, name: string }[]]>();
     const fetcher = useFetcher<AuditableObject>();
+    const {isAdmin} = useAppSelector(state => state.useAuthStore)
     const navigate = useNavigate();
 
-    const [openCreateForm, setOpenCreateForm] = React.useState(false);
-    const [openEditForm, setOpenEditForm] = React.useState(false);
-    const [form, setForm] = React.useState<Partial<AuditableObject>>({});
-    const [message, setMessage] = React.useState('');
+    const [formState, setFormState] = React.useState<FormType>({mode: null, data: null});
 
+    const [message, setMessage] = React.useState('');
     const setAlert = (message: string) => {
         setMessage(message);
         setTimeout(() => setMessage(''), 3000);
     }
 
-    const handleClose = () => {
-        setOpenCreateForm(false);
-        setOpenEditForm(false)
-        setForm({});
+    const [searchValue, setSearchValue] = React.useState('');
+    const [sortValue, setSortValue] = React.useState<{ field: string, direction: 'asc' | 'desc' }>({field: '', direction: 'asc'});
+    const sortOptions = [
+        {field: 'name', label: 'По названию'},
+        {field: 'auditCount', label: 'По количеству аудитов'},
+    ];
+
+    const processedObjects = useMemo(() => {
+        const search = searchValue.toLowerCase();
+        let filtered = search
+            ? objects.filter(object => object.name.toLowerCase().includes(search))
+            : objects;
+
+        if (sortValue.field) {
+            filtered.sort((a, b) => {
+                if (sortValue.field === 'name') {
+                    let aVal = a.name.toLowerCase();
+                    let bVal = b.name.toLowerCase();
+                    return sortValue.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                } else if (sortValue.field === 'auditCount') {
+                    return sortValue.direction === 'asc'
+                        ? a.auditCount - b.auditCount
+                        : b.auditCount - a.auditCount;
+                }
+
+                return 0;
+            });
+        }
+
+        return filtered;
+    }, [objects, searchValue, sortValue]);
+
+    const handleOpenForm = (mode: 'create' | 'edit', data: Partial<AuditableObject> = {}) => {
+        setFormState({mode, data});
     };
 
-    const createObject = async () => {
-        if (!form.name || !form.address)
-            return setAlert("Заполните все поля");
-        if (companies.length > 0 && !form.companyId)
-            return setAlert("Выберите компанию");
+    const handleSubmit = async () => {
+        const {mode, data} = formState;
+        if (!data) return;
+
+        if (!data.name || !data.address) return setAlert("Заполните все поля");
+        if (companies.length > 0 && !data.companyId) return setAlert("Выберите компанию");
 
         const formData = new FormData();
-        formData.set("state", JSON.stringify(form));
-        await fetcher.submit(formData, {method: "post"});
+        formData.set(mode === 'create' ? "createForm" : "updateForm", JSON.stringify(data));
+
+        await fetcher.submit(formData, {method: mode === 'create' ? "post" : "patch"});
 
         handleClose();
+    };
+
+    const handleClose = () => {
+        setFormState({mode: null, data: null});
+        setMessage('');
     };
 
     const columns = useMemo(() => {
         const items = [
             {title: 'Название', value: 'name'},
             {title: 'Адрес', value: 'address'},
+            {title: 'Аудиты', value: 'auditCount'},
             {title: '', value: 'action'},
         ];
 
@@ -52,109 +97,108 @@ export const AuditableObjects: React.FC = () => {
         return items;
     }, []);
 
-    const handleEditForm = async (e: React.MouseEvent<HTMLButtonElement>, object: AuditableObject) => {
-        e.stopPropagation();
-        setForm(object);
-        setOpenEditForm(true);
-    }
+    const ActionCell = React.memo(({row}: { row: AuditableObject }) => {
+        const navigate = useNavigate();
+        const handleEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+            handleOpenForm('edit', row);
+        };
 
-    const editObject = async () => {
-        const formData = new FormData();
-        formData.set("updateForm", JSON.stringify(form));
-        await fetcher.submit(formData, {method: "patch"});
-
-        handleClose();
-    };
+        return (
+            <Stack direction="row" justifyContent="end" alignItems="center" gap={2}>
+                <Button> Аудиты </Button>
+                {isAdmin && <Button
+                    onClick={() => navigate(`/audit/${row.id}/create`)}
+                    className="text-nowrap"
+                >
+                    Пройти аудит
+                </Button>}
+                <Tooltip title="Редактировать объект" placement="top">
+                    <IconButton aria-label="edit" onClick={handleEdit}>
+                        <EditIcon/>
+                    </IconButton>
+                </Tooltip>
+            </Stack>
+        );
+    });
 
     const getCellValue = (row: AuditableObject, column: string) => {
-        if (column === 'action') {
-            return (
-                <Stack direction="row" justifyContent="end" alignItems="center" gap={2}>
-                    <Button> Аудиты </Button>
-                    <Button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/audit/${row.id}/create`)
-                        }}
-                        className="text-nowrap"> Пройти аудит </Button
-                    >
-                    <Tooltip title="Редактировать объект" placement="top">
-                        <IconButton aria-label="edit" onClick={(e) => handleEditForm(e, row)}>
-                            <EditIcon/>
-                        </IconButton>
-                    </Tooltip>
-                </Stack>
-            )
-        }
-        if (column === 'companyId') {
-            return companies.find((company) => company.id === +row.companyId)?.name || '';
-        }
+        if (column === 'action')
+            return <ActionCell row={row}/>;
 
-        return row[column as keyof AuditableObject].toString();
+        if (column === 'companyId')
+            return companies.find((company) => company.id === +row.companyId)?.name || '';
+
+        return row[column as keyof AuditableObject]?.toString();
     }
 
     return (
         <>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={4}>
                 <Typography variant="h5" component="h3">Объекты аудита</Typography>
-                <Button variant="outlined" color="primary" onClick={() => setOpenCreateForm(true)}>
+                {isAdmin && <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleOpenForm('create')}
+                >
                     Добавить объект
-                </Button>
+                </Button>}
             </Stack>
 
-            {
-                objects.length > 0
-                    ? <TableContainer component={Paper}>
-                        <Table sx={{minWidth: 650}} aria-label="objects table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map(({title, value}) => (
-                                        <TableCell key={value} sx={{fontWeight: 'bold', fontSize: '1rem'}}>
-                                            {title}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {objects.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        sx={{'&:last-child td, &:last-child th': {border: 0}, cursor: 'pointer'}}
-                                        onClick={() => navigate(`/object/${row.id}`)}
-                                    >
-                                        {
-                                            columns.map(({value}) => (
-                                                <TableCell key={value}>{getCellValue(row, value)}</TableCell>))
-                                        }
-                                    </TableRow>
+            <SearchAndSort
+                searchValue={searchValue}
+                onSearchChange={setSearchValue}
+                sortValue={sortValue}
+                onSortChange={setSortValue}
+                sortOptions={sortOptions}
+                placeholder="Поиск по названию объекта"
+                onEscapeKeyDown={() => setSearchValue('')}
+            />
+
+            <RenderIf
+                condition={processedObjects.length > 0}
+                fallbackMessage="Добавьте объекты аудита"
+            >
+                <TableContainer component={Paper}>
+                    <Table sx={{minWidth: 650}} aria-label="objects table">
+                        <TableHead>
+                            <TableRow>
+                                {columns.map(({title, value}) => (
+                                    <TableCell key={value} sx={{fontWeight: 'bold', fontSize: '1rem'}}>
+                                        {title}
+                                    </TableCell>
                                 ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    : <Typography variant="body1" component="p">Добавьте объекты аудита</Typography>
-            }
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {processedObjects.map((row) => (
+                                <TableRow
+                                    key={row.id}
+                                    sx={{'&:last-child td, &:last-child th': {border: 0}, cursor: 'pointer'}}
+                                    onClick={() => navigate(`/object/${row.id}`)}
+                                >
+                                    {columns.map(({value}) => (
+                                        <TableCell key={value}>{getCellValue(row, value)}</TableCell>)
+                                    )}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </RenderIf>
 
-            {openCreateForm &&
-                <EditObject
-                    title="Добавить объект"
+            <RenderIf condition={formState.mode !== null}>
+                <ObjectForm
+                    title={formState.mode === 'create' ? 'Добавить объект' : 'Редактировать объект'}
                     handleClose={handleClose}
-                    handleSubmit={createObject}
-                    companies={companies}
+                    handleSubmit={handleSubmit}
+                    companies={formState.mode === 'create' ? companies : []}
+                    form={formState.data || {}}
+                    setForm={(data) => setFormState(prev => ({...prev, data}))}
                     message={message}
-                    form={form}
-                    setForm={setForm}
+                    loading={fetcher.state === 'loading'}
                 />
-            }
-
-            {openEditForm &&
-                <EditObject
-                    handleClose={handleClose}
-                    handleSubmit={editObject}
-                    companies={[]}
-                    form={form}
-                    setForm={setForm}
-                />
-            }
+            </RenderIf>
         </>
     );
 }

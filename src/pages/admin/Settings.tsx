@@ -1,112 +1,83 @@
 import type {Company} from "@/pages/admin/shared/types.ts";
-import {useFetcher, useLoaderData} from "react-router-dom";
+import {useLoaderData, useNavigate} from "react-router-dom";
 import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-    InputLabel,
-    MenuItem,
-    Paper,
-    Select,
-    Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    Tooltip,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Button, Avatar, Chip, Stack, Tooltip,
     Typography,
-    Alert
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/edit";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import GroupIcon from "@mui/icons-material/Group";
+import PersonIcon from "@mui/icons-material/Person";
+import BusinessIcon from "@mui/icons-material/Business";
 import React, {useMemo} from "react";
+import {CompanyForm} from "@/components/CompanyForm.tsx";
+import {RenderIf} from "@/components/RenderIf.tsx";
+import {SearchAndSort} from "@/components/ui/SearchAndSort.tsx";
+
+type User = { id: number, name: string, companyId: number | null };
 
 export const Settings = () => {
-    const [companies, users] = useLoaderData<[Company[], { id: number, name: string }[]]>();
-    const fetcher = useFetcher();
-
-    const [form, setForm] = React.useState<Partial<Company>>({});
+    const [companies, users] = useLoaderData<[Company[], User[]]>();
     const [openForm, setOpenForm] = React.useState(false);
-    const [message, setMessage] = React.useState('');
+    const [editingCompany, setEditingCompany] = React.useState<Company | undefined>();
+    const [searchValue, setSearchValue] = React.useState('');
+    const [sortValue, setSortValue] = React.useState<{ field: string, direction: 'asc' | 'desc' }>({field: '', direction: 'asc'});
+    const navigate = useNavigate();
 
-    const setAlert = (message: string) => {
-        setMessage(message);
-        setTimeout(() => setMessage(''), 3000);
-    }
+    const sortOptions = [
+        {field: 'name', label: 'По названию'},
+        {field: 'usersCount', label: 'По количеству сотрудников'},
+    ];
 
-    const handleClose = () => {
-        setOpenForm(false);
-        setForm({});
-    };
+    const processedCompanies = useMemo(() => {
+        const search = searchValue.toLowerCase();
+        let filtered = search
+            ? companies.filter(company => company.name.toLowerCase().includes(search))
+            : companies;
 
-    const handleEditForm = async (e: React.MouseEvent<HTMLButtonElement>, company: Company) => {
-        e.stopPropagation();
-        setForm(company);
-        setOpenForm(true);
-    }
+        if (sortValue.field) {
+            filtered.sort((a, b) => {
+                let aVal, bVal;
+                if (sortValue.field === 'name') {
+                    aVal = a.name.toLowerCase();
+                    bVal = b.name.toLowerCase();
+                    return sortValue.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                } else if (sortValue.field === 'usersCount') {
+                    aVal = a.users.length;
+                    bVal = b.users.length;
+                    return sortValue.direction === 'asc' ? aVal - bVal : bVal - aVal;
+                }
 
-    const usersById = useMemo(() => {
-        return users.reduce((acc: Record<string, string>, user) => {
-            acc[user.id] = user.name;
-            return acc;
-        }, {});
-    }, [users])
-
-    const handleChange = (ids: string | number[]) => {
-        if (Array.isArray(ids))
-            setForm({
-                ...form,
-                users: ids.map(id => ({id: id, name: usersById[id]}))
-            })
-    }
-
-    const handleSubmit = async () => {
-        if (!form.name)
-            return setAlert('Название компании не может быть пустым');
-        if (!form.ownerId)
-            return setAlert('Выберете владельца компании');
-
-        const formData = new FormData();
-        const data = {
-            name:    form.name,
-            ownerId: form.ownerId,
-            users:   form.users?.map(({id}) => id)
-        };
-
-        if (form.id) {
-            formData.set("updateForm", JSON.stringify({...data, id: form.id}))
-            await fetcher.submit(formData, {method: "patch"});
-        } else {
-            formData.set("createForm", JSON.stringify(data))
-            await fetcher.submit(formData, {method: "post"});
+                return 0;
+            });
         }
 
-        handleClose();
-    }
+        return filtered;
+    }, [companies, searchValue, sortValue]);
 
-    const getCellValue = (row: Company, column: keyof Company) => {
-        if (column === 'owner')
-            return row[column]?.name || 'Владельца не определен';
-        if (column === 'users')
-            return row.users
-                .filter(({id}) => id !== row.ownerId)
-                .map(({name}) => name)
-                .join(', ') || 'Нет сотрудников'; //'Нет сотрудников'
+    const usersForForm = useMemo(() => {
+        if (!editingCompany)
+            return users;
 
-        return row[column] ? row[column].toString() : '';
-    }
+        return users.filter(user => {
+            const isEmployee = user.companyId === editingCompany.id;
+            const guestUser = user.companyId === null;
+            return guestUser || isEmployee;
+        });
+    }, [users, editingCompany]);
 
-    const columns: { title: string, value: keyof Company }[] = [
-        {title: 'id', value: 'id'},
-        {title: 'Название', value: 'name'},
-        {title: 'Владелец', value: 'owner'},
-        {title: 'Сотрудники', value: 'users'},
-    ]
+    const handleOpenForm = (company?: Company) => {
+        setEditingCompany(company);
+        setOpenForm(true);
+    };
+
+    const handleCloseForm = () => {
+        setOpenForm(false);
+        setEditingCompany(undefined);
+    };
 
     return (
         <div>
@@ -119,101 +90,105 @@ export const Settings = () => {
                 </Button>
             </Stack>
 
-            {companies.length > 0 ?
-                <TableContainer component={Paper}>
-                    <Table sx={{minWidth: 650}} aria-label="objects table">
-                        <TableHead>
-                            <TableRow>
-                                {columns.map(({title, value}) => (
-                                    <TableCell key={value} sx={{fontWeight: 'bold', fontSize: '1rem'}}>
-                                        {title}
-                                    </TableCell>
-                                ))}
-                                <TableCell/>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {companies.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                                >
-                                    {columns.map(({value}) => (
-                                        <TableCell key={value}>
-                                            {getCellValue(row, value)}
-                                        </TableCell>
-                                    ))}
-                                    <TableCell>
-                                        <Tooltip title="Редактировать объект" placement="top">
-                                            <IconButton aria-label="edit" onClick={(e) => handleEditForm(e, row)}>
-                                                <EditIcon/>
-                                            </IconButton>
-                                        </Tooltip>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                : <Typography variant="body1" color="textSecondary">Нет компаний</Typography>
-            }
+            <div>
+                <SearchAndSort
+                    searchValue={searchValue}
+                    onSearchChange={setSearchValue}
+                    sortValue={sortValue}
+                    onSortChange={setSortValue}
+                    sortOptions={sortOptions}
+                    placeholder="Поиск по названию компании"
+                    onEscapeKeyDown={() => setSearchValue('')}
+                />
+                <RenderIf
+                    condition={processedCompanies.length > 0}
+                    fallbackMessage={searchValue ? 'Компании, соответствующие вашему запросу, не найдены.' : 'Нет компаний.'}
+                    containerProps={{pl: 4}}
+                >
+                    {processedCompanies.map((company) => (
+                        <Accordion key={company.id}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon/>}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >
+                                <Typography component="span" sx={{width: '33%', flexShrink: 0}}>{company.name}</Typography>
+                                <Typography component="span"
+                                            sx={{color: 'text.secondary'}}>{company?.owner?.name || "Выберете владельца"}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Stack spacing={2}>
+                                    {/* Блок с сотрудниками */}
+                                    <Stack direction="row" alignItems="center" spacing={1}>
+                                        <GroupIcon fontSize="small" color="action"/>
+                                        <Typography variant="subtitle2" color="text.secondary">
+                                            Сотрудники ({company.users.length}):
+                                        </Typography>
+                                    </Stack>
 
-            {openForm &&
-                <Dialog open={true} onClose={handleClose} fullWidth maxWidth="sm">
-                    <DialogTitle>{form?.id ? 'Редактирование компании' : 'Создание компании'}</DialogTitle>
-                    <DialogContent dividers>
-                        {message && <Alert severity="error">{message}</Alert>}
-                        <TextField
-                            margin="normal"
-                            fullWidth
-                            label="Название компании"
-                            required
-                            value={form.name || ''}
-                            onChange={e => setForm({...form, name: e.target.value})}
-                        />
-                        {
-                            users.length > 0 && (
-                                <>
-                                    <InputLabel id="select-label" sx={{fontSize: '14px', marginLeft: '12px'}}>Владелец</InputLabel>
-                                    <Select
-                                        labelId="select-label"
-                                        label="Владелец"
-                                        value={form.ownerId || ''}
-                                        onChange={(e) => setForm({...form, ownerId: +e.target.value || null})}
-                                        fullWidth
+                                    <RenderIf
+                                        condition={company.users.length > 0}
+                                        fallbackMessage="Нет сотрудников"
+                                        containerProps={{pl: 4}}
                                     >
-                                        {
-                                            users.map(({id, name}) => (
-                                                <MenuItem key={id} value={id}>{name}</MenuItem>
-                                            ))
-                                        }
-                                    </Select>
+                                        <Stack direction="row" spacing={1} flexWrap="wrap">
+                                            {company.users.map((user) => (
+                                                <Chip
+                                                    key={user.id}
+                                                    avatar={<Avatar sx={{width: 24, height: 24}}><PersonIcon fontSize="small"/></Avatar>}
+                                                    label={user.name}
+                                                    variant="outlined"
+                                                    size="small"
+                                                />
+                                            ))}
+                                        </Stack>
+                                    </RenderIf>
 
-                                    <InputLabel id="select-label" sx={{fontSize: '14px', marginLeft: '12px', marginTop: '12px'}}>
-                                        Сотрудники компании
-                                    </InputLabel>
-                                    <Select
-                                        labelId="select-label"
-                                        multiple
-                                        value={(form.users || []).map(({id}) => id)}
-                                        onChange={(e) => handleChange(e.target.value)}
-                                        fullWidth
+                                    {/* Блок с объектами */}
+                                    <Stack direction="row" alignItems="center" spacing={1} sx={{mt: 1}}>
+                                        <BusinessIcon fontSize="small" color="action"/>
+                                        <Typography variant="subtitle2" color="text.secondary">
+                                            Объекты ({company.objects.length}):
+                                        </Typography>
+                                    </Stack>
+
+                                    <RenderIf
+                                        condition={company.objects.length > 0}
+                                        fallbackMessage="Нет объектов"
+                                        containerProps={{pl: 4}}
                                     >
-                                        {
-                                            users.map(({id, name}) => (
-                                                <MenuItem key={id} value={id}>{name}</MenuItem>
-                                            ))
-                                        }
-                                    </Select>
-                                </>
-                            )
-                        }
-                    </DialogContent>
-                    <DialogActions sx={{padding: 3}}>
-                        <Button onClick={handleClose}>Отмена</Button>
-                        <Button onClick={handleSubmit} variant="contained">Сохранить</Button>
-                    </DialogActions>
-                </Dialog>}
+                                        <Stack direction="row" spacing={1} flexWrap="wrap">
+                                            {company.objects.map((object) => (
+                                                <Tooltip title={object.address} key={object.id} placement="top">
+                                                    <Chip
+                                                        label={object.name}
+                                                        variant="filled"
+                                                        size="small"
+                                                        color="primary"
+                                                        onClick={() => navigate(`/object/${object.id}`)}
+                                                    />
+                                                </Tooltip>
+                                            ))}
+                                        </Stack>
+                                    </RenderIf>
+                                </Stack>
+
+                                <Box display="flex" justifyContent="flex-end" mt={2} gap={1}>
+                                    <Button variant="outlined" onClick={() => handleOpenForm(company)}>
+                                        Редактировать
+                                    </Button>
+                                </Box>
+                            </AccordionDetails>
+                        </Accordion>
+                    ))}
+                </RenderIf>
+            </div>
+
+            {openForm && <CompanyForm
+                onClose={handleCloseForm}
+                company={editingCompany}
+                users={usersForForm}
+            />}
         </div>
     )
 }

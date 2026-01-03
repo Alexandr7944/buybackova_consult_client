@@ -24,11 +24,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import Logout from '@mui/icons-material/Logout';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import {logout, type User} from "@/store/useAuthStore.ts";
+import {logout} from "@/store/useAuthStore.ts";
 import {useAppDispatch, useAppSelector} from "@/hooks/hook.ts";
 
 export const Header: FC = () => {
-    const user: User | undefined = useAppSelector(state => state.useAuthStore.user);
+    const {user, isAdmin} = useAppSelector(state => state.useAuthStore);
     const dispatch = useAppDispatch();
 
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -49,11 +49,11 @@ export const Header: FC = () => {
     };
 
     const links = [
-        {name: "Главная", to: "../"},
-        {name: "Об авторах методологии", to: "/about"},
+        ...(isAdmin ? [{name: "Компании", to: "/admin/settings"}] : []),
+        {name: "Объекты", to: "../"},
+        // {name: "Об авторах методологии", to: "/about"},
         {name: "Методология", to: "/methodology"},
-        {name: "Контакты", to: "/contacts"},
-        ...(user?.roles.includes('admin') ? [{name: "Настройки", to: "/admin/settings"}] : [])
+        // {name: "Контакты", to: "/contacts"},
     ];
 
     const drawer = (

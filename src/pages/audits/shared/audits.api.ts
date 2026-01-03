@@ -18,10 +18,7 @@ export async function createAudit(stateJson: string, signal?: AbortSignal): Prom
 
 export async function updateAudit(stateJson: string, signal?: AbortSignal): Promise<Audit> {
     const id = JSON.parse(stateJson).id;
-    const response = await apiClient.patch<Audit>(`/audits/${id}`, {
-        data: stateJson,
-        signal,
-    });
+    const response = await apiClient.patch<Audit>(`/audits/${id}`, stateJson, {signal});
     return response.data;
 }
 

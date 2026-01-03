@@ -10,7 +10,8 @@ export async function fetchUsers(signal?: AbortSignal): Promise<AuditableObject[
 
 export async function fetchCompanies(): Promise<Company[]> {
     return apiClient.get('/companies')
-        .then(response => response.data);
+        .then(response => response.data)
+        .catch(() => []);
 }
 
 export async function createCompany(stateJson: string): Promise<Company | null> {

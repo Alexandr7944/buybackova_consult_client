@@ -35,7 +35,7 @@ export const Methodology = () => {
                 align="center"
                 sx={{fontWeight: 'bold', mb: 4}}
             >
-                Услуги
+                Методология
             </Typography>
 
             <Card elevation={3} sx={{mb: 4}}>

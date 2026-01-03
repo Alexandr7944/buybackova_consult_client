@@ -1,6 +1,6 @@
 import {createRoot} from 'react-dom/client'
 import {StrictMode} from "react";
-import './index.css'
+import './styles/index.css'
 import {RouterProvider} from "react-router-dom";
 import {router} from "@/router/RoutesList";
 import {Provider} from "react-redux";
