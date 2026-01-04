@@ -82,7 +82,6 @@ apiClient.interceptors.response.use(
             }
         }
 
-        // For any other error, reject the promise and clear the queue
         return Promise.reject(error);
     }
 );

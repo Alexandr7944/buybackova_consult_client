@@ -9,17 +9,17 @@ export const FONTS: FontConfig[] = [
     {
         name:  'Roboto',
         style: 'normal',
-        path:  '/fonts/Roboto-Regular.ttf'
+        path:  '../fonts/Roboto-Regular.ttf'
     },
     {
         name:  'Roboto',
         style: 'bold',
-        path:  '/fonts/Roboto-Bold.ttf'
+        path:  '../fonts/Roboto-Bold.ttf'
     },
     {
         name:  'Roboto',
         style: 'italic',
-        path:  '/fonts/Roboto-Italic.ttf'
+        path:  '../fonts/Roboto-Italic.ttf'
     },
 ];
 

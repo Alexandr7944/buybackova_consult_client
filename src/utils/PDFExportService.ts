@@ -164,14 +164,6 @@ export class PDFExportService {
                 footerY,
                 {align: 'center'}
             );
-
-            const date = new Date().toLocaleDateString('ru-RU');
-            this.doc.text(
-                `Дата экспорта: ${date}`,
-                this.pageWidth - this.margin.right,
-                footerY,
-                {align: 'right'}
-            );
         }
     }
 
@@ -182,8 +174,7 @@ export class PDFExportService {
             this.addPageFooter();
             this.doc.addPage();
             this.currentPage++;
-            this.currentPosition.y = this.margin.top + 10;
-            this.addPageHeader('Продолжение отчета');
+            this.currentPosition.y = this.margin.top;
             return true;
         }
 
@@ -293,8 +284,7 @@ export class PDFExportService {
                 this.addPageFooter();
                 this.doc.addPage();
                 this.currentPage++;
-                this.currentPosition.y = this.margin.top + 10;
-                this.addPageHeader('Продолжение отчета');
+                this.currentPosition.y = this.margin.top;
             }
         }
     }

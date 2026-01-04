@@ -60,7 +60,7 @@ export const AuditItem = () => {
     }
 
     const downloadPath = `${getBaseUrl()}/audits/report-xlsx/${auditValue.id}`;
-
+    const title = `Протокол аудита ${auditValue.object.name} от ${format(auditValue.date, 'dd.MM.yyyy')}`;
     return (
         <>
             <BreadcrumbsRow
@@ -88,13 +88,13 @@ export const AuditItem = () => {
                 <PDFExportButton
                     reportContainerId="report-content"
                     chartRefs={chartRefs}
-                    title="Аналитический отчет по объектам"
+                    title={title}
                     fileName="аналитический_отчет.pdf"
                     elements={exportElements}
                 />
             </Stack>
             <PDFPreviewModal
-                title={`Протокол аудита ${auditValue.object.name} ${format(auditValue.date, 'dd.MM.yyyy')}`}
+                title={title}
                 open={showPDF}
                 reportContainerId="report-content"
                 elements={exportElements}
