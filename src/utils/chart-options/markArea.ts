@@ -1,17 +1,22 @@
 import {getLabelArea} from "@/utils/chart-options/label.ts";
 
 const OPACITY = '15';
-const STEP_Y = 5;
-const STEP_X = 8.3;
 
-export const markArea = (values: { position: [number, number], text: string }[], color: string) => {
+export const markArea = (values: { position: [number, number], text: string }[], color: string, maxValues: { y: number; x: number }) => {
+
     const data = values.map(({position, text}) =>
         [
             {
-                coord: position
+                coord: [
+                    maxValues.x / 3 * (position[0] - 1),
+                    maxValues.y / 3 * (position[1] - 1)
+                ]
             },
             {
-                coord: [position[0] + STEP_Y, (position[1] + STEP_X).toFixed(2)],
+                coord: [
+                    maxValues.x / 3 * position[0],
+                    maxValues.y / 3 * position[1]
+                ],
                 ...getLabelArea(text)
             }
         ]

@@ -11,13 +11,14 @@ export const getLabelArea = (text: string) => ({
     }
 })
 
-export const getLabelDate = () => ({
+export const getLabelData = () => ({
     label: {
         show:            true,
-        position:        'top',
+        position:        'TopLeft',
         distance:        15,
         formatter:       ({data}: { data: [number, number, string] }) => {
-            return `${data[1]} - ${data[0]}`;
+            return data[2];
+            // return `${data[1]} - ${data[0]}`;
             // return `${data[2]} \n ${data[1]} - ${data[0]}`;
         },
         fontSize:        10,

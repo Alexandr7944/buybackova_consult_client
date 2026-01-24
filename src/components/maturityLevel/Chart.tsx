@@ -12,6 +12,14 @@ type Props = {
 };
 
 export const Chart = ({ref, reports, title, type = 'radar'}: Props) => {
+    const maxValues = useMemo(() => {
+        return reports.reduce((acc, item) => {
+            acc.y = Math.max(acc.y, item.resultByQuestion ?? 0);
+            acc.x = Math.max(acc.x, (item.total ?? 0) / 3);
+            return acc;
+        }, {x: 0, y: 0});
+    }, [reports]);
+
     const radarOption = () => ({
         radar:     {
             indicator: reports.map(({title}) => ({
@@ -101,72 +109,75 @@ export const Chart = ({ref, reports, title, type = 'radar'}: Props) => {
         ],
     });
     const scatterOption = () => ({
-            xAxis:   {
-                type:          'value',
-                name:          'Значимость инструмента при внедрении СХ-системы',
-                nameLocation:  'middle',
-                offset:        5,
-                nameTextStyle: {
-                    fontSize:   14,
-                    fontWeight: 'bold',
-                    lineHeight: 56,
-                }
-            },
-            yAxis:   {
-                type:          'value',
-                name:          'Уровень применения инструмента',
-                nameLocation:  'middle',
-                offset:        5,
-                nameTextStyle: {
-                    fontSize:   14,
-                    fontWeight: 'bold',
-                    lineHeight: 56,
-                }
-            },
-            tooltip: {
-                trigger: 'item',
-                // alwaysShowContent: true,
-                formatter: (params: any) => `${params.value[2]}<br/>
+        xAxis:   {
+            type:          'value',
+            name:          'Значимость инструмента при внедрении СХ-системы',
+            nameLocation:  'middle',
+            offset:        5,
+            nameTextStyle: {
+                fontSize:   14,
+                fontWeight: 'bold',
+                lineHeight: 56,
+            }
+        },
+        yAxis:   {
+            type:          'value',
+            name:          'Уровень применения инструмента',
+            nameLocation:  'middle',
+            offset:        5,
+            nameTextStyle: {
+                fontSize:   14,
+                fontWeight: 'bold',
+                lineHeight: 56,
+            }
+        },
+        tooltip: {
+            trigger: 'item',
+            // alwaysShowContent: true,
+            formatter: (params: any) => `${params.value[2]}<br/>
                 Значимость: ${params.value[0].toFixed()}<br/>
                 Уровень применения: ${params.value[1].toFixed()}`
-            },
-            // visualMap: [
-            //     {
-            //         // Зоны для осей X
-            //         type:      'piecewise',
-            //         show:      false,
-            //         dimension: 0, // Ось X
-            //         pieces:    [
-            //             {min: 0, max: 3, color: 'rgba(255, 0, 0, 0.1)'},   // Красная зона
-            //             {min: 3, max: 7, color: 'rgba(255, 165, 0, 0.1)'}, // Оранжевая зона
-            //             {min: 7, max: 10, color: 'rgba(0, 128, 0, 0.1)'}   // Зеленая зона
-            //         ]
-            //     },
-            //     {
-            //         // Зоны для осей Y
-            //         type:      'piecewise',
-            //         show:      false,
-            //         dimension: 1, // Ось Y
-            //         pieces:    [
-            //             {min: 0, max: 3, color: 'rgba(255, 0, 0, 0.1)'},
-            //             {min: 3, max: 7, color: 'rgba(255, 165, 0, 0.1)'},
-            //             {min: 7, max: 10, color: 'rgba(0, 128, 0, 0.1)'}
-            //         ]
-            //     }
-            // ],
-            series: [
-                ...areaTemplates.map(({values, color}) => markArea(values, color)),
-                {
-                    symbolSize: 10,
-                    data:
-                                reports.map
-                                (({total, resultByQuestion, title}) => [(total ?? 0) / 3, resultByQuestion, title]),
-                    type,
-
-                }
-            ]
-        })
-    ;
+        },
+        // visualMap: [
+        //     {
+        //         // Зоны для осей X
+        //         type:      'piecewise',
+        //         show:      false,
+        //         dimension: 0, // Ось X
+        //         pieces:    [
+        //             {min: 0, max: 3, color: 'rgba(255, 0, 0, 0.1)'},   // Красная зона
+        //             {min: 3, max: 7, color: 'rgba(255, 165, 0, 0.1)'}, // Оранжевая зона
+        //             {min: 7, max: 10, color: 'rgba(0, 128, 0, 0.1)'}   // Зеленая зона
+        //         ]
+        //     },
+        //     {
+        //         // Зоны для осей Y
+        //         type:      'piecewise',
+        //         show:      false,
+        //         dimension: 1, // Ось Y
+        //         pieces:    [
+        //             {min: 0, max: 3, color: 'rgba(255, 0, 0, 0.1)'},
+        //             {min: 3, max: 7, color: 'rgba(255, 165, 0, 0.1)'},
+        //             {min: 7, max: 10, color: 'rgba(0, 128, 0, 0.1)'}
+        //         ]
+        //     }
+        // ],
+        series: [
+            ...(
+                !maxValues.y || !maxValues.x
+                    ? []
+                    : areaTemplates.map(({values, color}) => markArea(values, color, maxValues))
+            ),
+            {
+                symbolSize: 10,
+                data:
+                            reports.map
+                            (({total, resultByQuestion, title}) => [(total ?? 0) / 3, resultByQuestion, title]),
+                type,
+                // ...getLabelData(),
+            }
+        ]
+    });
     const option = useMemo(
         () => {
             if (type === 'radar')
@@ -243,93 +254,10 @@ export const Chart = ({ref, reports, title, type = 'radar'}: Props) => {
 //         }
 //     ],
 //
-//
-//
 //     series: [
-//         // Зона 1: Высокий приоритет (центр)
-//         {
-//             type: 'scatter',
-//             symbolSize: 0,
-//             data: [],
-//             markArea: {
-//                 silent: true,
-//                 itemStyle: {
-//                     color: 'rgba(82, 196, 26, 0.15)',
-//                     borderColor: '#52c41a',
-//                     borderWidth: 1,
-//                     borderType: 'dashed'
-//                 },
-//                 data: [[
-//                     { coord: [6, 6] },
-//                     { coord: [10, 10] }
-//                 ]]
-//             }
-//         },
-//         // Зона 2: Средний приоритет
-//         {
-//             type: 'scatter',
-//             symbolSize: 0,
-//             data: [],
-//             markArea: {
-//                 silent: true,
-//                 itemStyle: {
-//                     color: 'rgba(250, 173, 20, 0.15)',
-//                     borderColor: '#faad14',
-//                     borderWidth: 1,
-//                     borderType: 'dashed'
-//                 },
-//                 data: [[
-//                     { coord: [3, 3] },
-//                     { coord: [6, 6] }
-//                 ]]
-//             }
-//         },
-//         // Зона 3: Низкий приоритет
-//         {
-//             type: 'scatter',
-//             symbolSize: 0,
-//             data: [],
-//             markArea: {
-//                 silent: true,
-//                 itemStyle: {
-//                     color: 'rgba(255, 77, 79, 0.15)',
-//                     borderColor: '#ff4d4f',
-//                     borderWidth: 1,
-//                     borderType: 'dashed'
-//                 },
-//                 data: [[
-//                     { coord: [0, 0] },
-//                     { coord: [3, 3] }
-//                 ]]
-//             }
-//         },
 //         {
 //             symbolSize: 20,
-//             data: [
-//
-//                 [10.0, 8.04],
-//                 [8.07, 6.95],
-//                 [13.0, 7.58],
-//                 [9.05, 8.81],
-//                 [11.0, 8.33],
-//                 [14.0, 7.66],
-//                 [13.4, 6.81],
-//                 [10.0, 6.33],
-//                 [14.0, 8.96],
-//                 [12.5, 6.82],
-//                 [9.15, 7.2],
-//                 [11.5, 7.2],
-//                 [3.03, 4.23],
-//                 [12.2, 7.83],
-//                 [2.02, 4.47],
-//                 [1.05, 3.33],
-//                 [4.05, 4.96],
-//                 [6.03, 7.24],
-//                 [12.0, 6.26],
-//                 [12.0, 8.84],
-//                 [7.08, 5.82],
-//                 [5.02, 5.68]
-//             ],
+//             data: [],
 //             type: 'scatter',
 //             itemStyle: {
 //                 color: '#1890ff',
