@@ -23,6 +23,8 @@ export const AuditItem = () => {
     const description1Ref = useRef<HTMLDivElement>(null);
     const chart2Ref = useRef<EChartsReact>(null);
     const description2Ref = useRef<HTMLDivElement>(null);
+    const chart3Ref = useRef<EChartsReact>(null);
+    const description3Ref = useRef<HTMLDivElement>(null);
     const descriptionRef = useRef<HTMLDivElement>(null);
     const chartRefs = [chart1Ref, chart2Ref];
 
@@ -32,6 +34,8 @@ export const AuditItem = () => {
         {type: 'content', ref: description1Ref},
         {type: 'chart', ref: chart2Ref},
         {type: 'content', ref: description2Ref},
+        {type: 'chart', ref: chart3Ref},
+        {type: 'content', ref: description3Ref},
         {type: 'content', ref: descriptionRef},
     ]
 
@@ -49,7 +53,6 @@ export const AuditItem = () => {
         () => Object.groupBy(auditValue?.results, (result) => result.type),
         [auditValue.results]
     )
-
     const saveChange = async (data: { [name: string]: string | null }) => {
         if (Object.keys(data).length) {
             const formData = new FormData();
@@ -148,6 +151,22 @@ export const AuditItem = () => {
                     ref={description2Ref}
                     name="categoryDescription"
                     value={auditValue.categoryDescription}
+                    saveChange={saveChange}
+                />
+
+                <Divider/>
+
+                {reports.tool && (<Chart
+                    ref={chart3Ref}
+                    type="scatter"
+                    title="Значимость инструмента при внедрении СХ-системы"
+                    reports={reports.tool as ReportItem[]}
+                />)}
+
+                <Description
+                    ref={description3Ref}
+                    name="toolDescription"
+                    value={auditValue.toolDescription}
                     saveChange={saveChange}
                 />
 

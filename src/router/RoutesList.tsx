@@ -53,7 +53,7 @@ export const routes: RouteObject[] = [
                         // objects list by owner
                         index: true,
                         lazy:  async () => {
-                            const mod = await import("@/pages/audits/auditable-objects.route.ts");
+                            const mod = await import("@/pages/audits/routes/auditable-objects.route.ts");
                             return {
                                 Component: mod.Component,
                                 loader:    mod.loader,
@@ -65,7 +65,7 @@ export const routes: RouteObject[] = [
                         //audits list by object
                         path: '/object/:id',
                         lazy: async () => {
-                            const mod = await import("@/pages/audits/audit-list.route");
+                            const mod = await import("@/pages/audits/routes/audit-list.route");
                             return {
                                 Component: mod.Component,
                                 loader:    mod.loader,
@@ -80,7 +80,7 @@ export const routes: RouteObject[] = [
                                 // show audit item by id
                                 path: ':id',
                                 lazy: async () => {
-                                    const mod = await import("@/pages/audits/audit-item.route");
+                                    const mod = await import("@/pages/audits/routes/audit-item.route");
                                     return {
                                         Component: mod.Component,
                                         loader:    mod.loader,
@@ -92,7 +92,7 @@ export const routes: RouteObject[] = [
                                 // create new audit by object id
                                 path: ':objectId/create',
                                 lazy: async () => {
-                                    const mod = await import("@/pages/audits/new-audit.route");
+                                    const mod = await import("@/pages/audits/routes/new-audit.route");
                                     return {
                                         Component: mod.Component,
                                         loader:    mod.loader,
@@ -104,7 +104,7 @@ export const routes: RouteObject[] = [
                                 // edit audit by id
                                 path: ':id/edit',
                                 lazy: async () => {
-                                    const mod = await import("@/pages/audits/audit-edit.route");
+                                    const mod = await import("@/pages/audits/routes/audit-edit.route");
                                     return {
                                         Component: mod.Component,
                                         loader:    mod.loader,

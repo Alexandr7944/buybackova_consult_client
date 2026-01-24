@@ -10,6 +10,7 @@ export type Audit = {
     resultDescription: string;
     sectionDescription: string | null;
     categoryDescription: string | null;
+    toolDescription: string | null;
     reportDescription: string | null;
     formState: Record<string, number>;
     results: {
@@ -35,7 +36,9 @@ export type Section = {
 
 export type ReportItem = {
     title: string;
-    percentage: number
+    percentage: number,
+    resultByQuestion?: number,
+    total?: number,
 };
 
 export type Report = {
