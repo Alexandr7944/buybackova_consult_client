@@ -1,4 +1,4 @@
-import type {Company} from "@/pages/admin/shared/types.ts";
+import type {Company} from "@/pages/admin/companies/shared/types.ts";
 import {useLoaderData, useNavigate} from "react-router-dom";
 import {
     Accordion,
@@ -19,7 +19,7 @@ import {SearchAndSort} from "@/components/ui/SearchAndSort.tsx";
 
 type User = { id: number, name: string, companyId: number | null };
 
-export const Settings = () => {
+export const Companies = () => {
     const [companies, users] = useLoaderData<[Company[], User[]]>();
     const [openForm, setOpenForm] = React.useState(false);
     const [editingCompany, setEditingCompany] = React.useState<Company | undefined>();

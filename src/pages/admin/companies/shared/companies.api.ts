@@ -1,10 +1,10 @@
-import type {Company} from "@/pages/admin/shared/types.ts";
+import type {Company} from "@/pages/admin/companies/shared/types.ts";
 import type {AuditableObject} from "@/pages/audits/shared/types.ts";
 import apiClient from "@/shared/axios.ts";
 
 
-export async function fetchUsers(signal?: AbortSignal): Promise<AuditableObject[]> {
-    const response = await apiClient.get<AuditableObject[]>("/users", {signal});
+export async function fetchUsers(): Promise<AuditableObject[]> {
+    const response = await apiClient.get<AuditableObject[]>("/users");
     return response.data;
 }
 

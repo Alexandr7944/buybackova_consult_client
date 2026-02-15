@@ -49,7 +49,7 @@ export const Header: FC = () => {
     };
 
     const links = [
-        ...(isAdmin ? [{name: "Компании", to: "/admin/settings"}] : []),
+        ...(isAdmin ? [{name: "Компании", to: "/admin/companies"}] : []),
         {name: "Объекты", to: "../"},
         // {name: "Об авторах методологии", to: "/about"},
         {name: "Методология", to: "/methodology"},

@@ -1,8 +1,8 @@
-import {Settings} from "@/pages/admin/Settings.tsx";
-import {createCompany, fetchCompanies, fetchUsers, updateCompany} from "@/pages/admin/shared/settings.api.ts";
 import type {ActionFunctionArgs} from "react-router-dom";
+import {Companies} from "@/pages/admin/companies/Companies.tsx";
+import {createCompany, fetchCompanies, fetchUsers, updateCompany} from "@/pages/admin/companies/shared/companies.api.ts";
 
-export const Component = Settings;
+export const Component = Companies;
 
 
 export async function loader() {
