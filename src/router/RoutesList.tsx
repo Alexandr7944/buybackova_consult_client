@@ -134,7 +134,7 @@ export const routes: RouteObject[] = [
                                     return {
                                         Component: mod.Component,
                                         loader:    mod.loader,
-                                        // action:    mod.action
+                                        action:    mod.action
                                     };
                                 }
                             }

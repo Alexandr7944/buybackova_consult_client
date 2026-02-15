@@ -10,7 +10,7 @@ type ParamsRow = {
     title: string;
 }
 
-type Question = {
+export type Question = {
     id: number;
     standard: string;
     question: string;
