@@ -1,25 +1,23 @@
 import {useFetcher, useLoaderData} from "react-router-dom";
 import type {BundleParams, Question} from "@/pages/admin/recategorize/shared/types.ts";
 import {
-    Button,
     MenuItem,
     Paper,
     Select,
-    Stack,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    TextareaAutosize
 } from "@mui/material";
 import {useState} from "react";
+import {CellEditor} from "@/components/recotigorizeComponents/CellEditor.tsx";
 
 export const CategoryReassignPanel = () => {
     const data = useLoaderData<BundleParams>();
     const fetcher = useFetcher();
-    const [editedCell, setEditedCell] = useState<{ id: number, type: 'standard' | 'question' } | null>(null);
+    const [editedCell, setEditedCell] = useState<{ id: number, type: string } | null>(null);
     const [editedQuestion, setEditedQuestion] = useState<Question | null>(null)
 
     const titles = [
@@ -31,12 +29,12 @@ export const CategoryReassignPanel = () => {
         {id: 'tool', label: 'Инструменты'},
     ];
 
-    const editCell = (question: Question) => {
+    const editCell = (type: string, question: Question) => {
         if (editedCell) {
             return console.log('Edited item!');
         }
 
-        setEditedCell({id: question.id, type: 'standard'});
+        setEditedCell({id: question.id, type});
         setEditedQuestion(question);
     }
 
@@ -46,8 +44,19 @@ export const CategoryReassignPanel = () => {
     }
 
     const saveCell = async () => {
+        if (!editedQuestion) {
+            return console.log('editedQuestion is null');
+        }
+
         const formData = new FormData();
         formData.set("editQuestion", JSON.stringify(editedQuestion));
+        await fetcher.submit(formData, {method: "PATCH"});
+        resetCell();
+    }
+
+    const selectParameter = async (question: Question) => {
+        const formData = new FormData();
+        formData.set("editQuestion", JSON.stringify(question));
         await fetcher.submit(formData, {method: "PATCH"});
         resetCell();
     }
@@ -55,43 +64,47 @@ export const CategoryReassignPanel = () => {
     return (
         <Paper>
             <TableContainer sx={{overflow: 'hidden', overflowX: 'auto'}}>
-                <Table>
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
                             {titles.map(({id, label, minWidth}) =>
-                                <TableCell key={id} style={{minWidth}}>{label}</TableCell>)}
+                                <TableCell
+                                    key={id}
+                                    style={{minWidth}}
+                                >
+                                    {label}
+                                </TableCell>)}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {
                             data.questions.map(question => (
-                                <TableRow key={question.id}>
+                                <TableRow key={question.id} style={{verticalAlign: 'top'}}>
                                     <TableCell>{question.id}</TableCell>
-                                    <TableCell>
-                                        {
-                                            (editedCell?.id === question.id && editedCell?.type === 'standard' && editedQuestion)
-                                                ? <Stack>
-                                                    <TextareaAutosize
-                                                        value={editedQuestion?.standard}
-                                                        onChange={e => setEditedQuestion({...editedQuestion, standard: e.target.value})}
-                                                        style={{width: '100%'}}
-                                                    />
-                                                    <Stack direction='row' justifyContent='flex-end'>
-                                                        <Button onClick={resetCell}>Отменить</Button>
-                                                        <Button onClick={saveCell}>Сохранить</Button>
-                                                    </Stack>
-                                                </Stack>
-                                                : <span onClick={() => editCell(question)}>{question.standard}</span>
-                                        }
-                                    </TableCell>
-                                    <TableCell>{question.question}</TableCell>
+                                    <CellEditor
+                                        value={question.standard}
+                                        isEdit={editedCell?.id === question.id && editedCell?.type === 'standard' && !!editedQuestion}
+                                        editValue={editedQuestion?.standard}
+                                        onChange={val => editedQuestion && setEditedQuestion({...editedQuestion, standard: val})}
+                                        selectItem={() => editCell('standard', question)}
+                                        resetCell={resetCell}
+                                        saveCell={saveCell}
+                                    />
+                                    <CellEditor
+                                        value={question.question}
+                                        isEdit={editedCell?.id === question.id && editedCell?.type === 'question' && !!editedQuestion}
+                                        editValue={editedQuestion?.question}
+                                        onChange={val => editedQuestion && setEditedQuestion({...editedQuestion, question: val})}
+                                        selectItem={() => editCell('question', question)}
+                                        resetCell={resetCell}
+                                        saveCell={saveCell}
+                                    />
                                     <TableCell>
                                         <Select
                                             value={question.sectionId || 0}
                                             label="Секция"
                                             sx={{width: 250}}
-                                            onChange={() => {
-                                            }}
+                                            onChange={(e) => selectParameter({...question, sectionId: e.target.value})}
                                         >
                                             {
                                                 data.sections.map(({id, title}) => (
@@ -106,8 +119,7 @@ export const CategoryReassignPanel = () => {
                                             value={question.categoryId || 0}
                                             label="Категория"
                                             sx={{width: 250}}
-                                            onChange={() => {
-                                            }}
+                                            onChange={(e) => selectParameter({...question, categoryId: e.target.value})}
                                         >
                                             {
                                                 data.categories.map(({id, title}) => (
@@ -122,8 +134,7 @@ export const CategoryReassignPanel = () => {
                                             value={question.toolId || 0}
                                             label="Инструмент"
                                             sx={{width: 250}}
-                                            onChange={() => {
-                                            }}
+                                            onChange={(e) => selectParameter({...question, toolId: e.target.value})}
                                         >
                                             {
                                                 data.tools.map(({id, title}) => (

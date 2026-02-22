@@ -26,11 +26,15 @@ import Logout from '@mui/icons-material/Logout';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import {logout} from "@/store/useAuthStore.ts";
 import {useAppDispatch, useAppSelector} from "@/hooks/hook.ts";
+import {RenderIf} from "@/components/RenderIf.tsx";
+import SettingsIcon from '@mui/icons-material/Settings';
+import BusinessIcon from '@mui/icons-material/Business';
+import CheckIcon from '@mui/icons-material/Check';
 
 export const Header: FC = () => {
     const {user, isAdmin} = useAppSelector(state => state.useAuthStore);
     const dispatch = useAppDispatch();
-
+    const [open, toggleDrawer] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
     const toggleMobile = () => setMobileOpen(v => !v);
 
@@ -49,19 +53,24 @@ export const Header: FC = () => {
     };
 
     const links = [
-        ...(isAdmin ? [{name: "Компании", to: "/admin/companies"}] : []),
-        {name: "Объекты", to: "../"},
-        // {name: "Об авторах методологии", to: "/about"},
-        {name: "Методология", to: "/methodology"},
-        // {name: "Контакты", to: "/contacts"},
+        {name: "Объекты", to: "../", icon: <CheckIcon/>},
+        // {name: "Об авторах методологии", to: "/about", icon: ''},
+        {name: "Методология", to: "/methodology", icon: <CheckIcon/>},
+        // {name: "Контакты", to: "/contacts", icon: ''},
     ];
+
+    const linksForAdmin = [
+        {name: "Компании", to: "/admin/companies", icon: <BusinessIcon/>},
+        {name: "Параметры", to: "/admin/recategorize", icon: <SettingsIcon/>}
+    ]
 
     const drawer = (
         <Box role="presentation" sx={{width: 260}} onClick={toggleMobile}>
             <List>
-                {links.map(l => (
+                {(isAdmin ? [...linksForAdmin, ...links] : links).map(l => (
                     <ListItem key={l.to} disablePadding>
                         <ListItemButton component={RouterLink} to={l.to}>
+                            <ListItemIcon>{l.icon}</ListItemIcon>
                             <ListItemText primary={l.name}/>
                         </ListItemButton>
                     </ListItem>
@@ -104,12 +113,26 @@ export const Header: FC = () => {
                     </Box>
 
                     {/* Logo */}
-                    <Button color="inherit" component={RouterLink} to="../" sx={{fontWeight: 700, letterSpacing: 0.3}}>
+                    <Button
+                        color="inherit"
+                        component={RouterLink}
+                        to="../"
+                        sx={{fontWeight: 700, letterSpacing: 0.3}}
+                    >
                         ВАУbakova
                     </Button>
 
                     {/* Desktop links */}
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, gap: 2}}>
+                        <RenderIf condition={isAdmin}>
+                            <Button
+                                color="inherit"
+                                className="text-nowrap"
+                                onClick={() => toggleDrawer(true)}
+                            >
+                                Админ
+                            </Button>
+                        </RenderIf>
                         {links.map(l => (
                             <Button
                                 key={l.to}
@@ -187,6 +210,31 @@ export const Header: FC = () => {
                     </Box>
                 </Toolbar>
             </Container>
+
+            {/* Admin drawer */}
+            <Drawer
+                open={open}
+                onClose={() => toggleDrawer(false)}
+            >
+                <nav aria-label="main mailbox folders">
+                    <List sx={{minWidth: 360}}>
+                        {
+                            linksForAdmin.map(l => (
+                                <ListItem key={l.to} disablePadding>
+                                    <ListItemButton
+                                        color="inherit"
+                                        component={RouterLink}
+                                        to={l.to}
+                                    >
+                                        <ListItemIcon>{l.icon}</ListItemIcon>
+                                        <ListItemText primary={l.name}/>
+                                    </ListItemButton>
+                                </ListItem>
+                            ))
+                        }
+                    </List>
+                </nav>
+            </Drawer>
 
             {/* Mobile drawer */}
             <Drawer
