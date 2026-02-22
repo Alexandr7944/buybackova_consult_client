@@ -1,155 +1,149 @@
 import {useFetcher, useLoaderData} from "react-router-dom";
-import type {BundleParams, Question} from "@/pages/admin/recategorize/shared/types.ts";
+import type {BundleParams} from "@/pages/admin/recategorize/shared/types.ts";
+import {Paper,} from "@mui/material";
 import {
-    MenuItem,
-    Paper,
-    Select,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-} from "@mui/material";
-import {useState} from "react";
-import {CellEditor} from "@/components/recotigorizeComponents/CellEditor.tsx";
+    DataGrid,
+    type GridRenderCellParams,
+    type GridRenderEditCellParams,
+    type GridRowModel
+} from '@mui/x-data-grid';
+import {useCallback} from "react";
+import {MultilineTextEditor} from "@/components/recotigorizeComponents/MultilineTextEditor.tsx";
+import {MultilineTextRenderer} from "@/components/recotigorizeComponents/MultilineTextRenderer.tsx";
+import {SelectRenderer} from "@/components/recotigorizeComponents/SelectRenderer.tsx";
+import {SelectEditCell} from "@/components/recotigorizeComponents/SelectEditCell.tsx";
 
 export const CategoryReassignPanel = () => {
     const data = useLoaderData<BundleParams>();
     const fetcher = useFetcher();
-    const [editedCell, setEditedCell] = useState<{ id: number, type: string } | null>(null);
-    const [editedQuestion, setEditedQuestion] = useState<Question | null>(null)
 
-    const titles = [
-        {id: 'id', label: '№'},
-        {id: 'standard', label: 'Стандарт', minWidth: '500px'},
-        {id: 'question', label: 'Вопросы', minWidth: '500px'},
-        {id: 'section', label: 'Секции'},
-        {id: 'category', label: 'Категории'},
-        {id: 'tool', label: 'Инструменты'},
+    const processRowUpdate = useCallback(async (newRow: GridRowModel, oldRow: GridRowModel) => {
+        if (JSON.stringify(newRow) === JSON.stringify(oldRow)) {
+            return oldRow;
+        }
+
+        const formData = new FormData();
+        formData.set("editQuestion", JSON.stringify(newRow));
+        await fetcher.submit(formData, {method: "PATCH"});
+
+        return newRow;
+    }, [fetcher]);
+
+    const columns = [
+        {
+            field:      'id',
+            headerName: 'ID',
+            width:      70
+        },
+        {
+            field:          'standard',
+            headerName:     'Стандарт',
+            width:          300,
+            editable:       true,
+            renderCell:     (params: GridRenderCellParams) => (
+                <MultilineTextRenderer value={params.value || ''}/>
+            ),
+            renderEditCell: (params: GridRenderEditCellParams) => (
+                <MultilineTextEditor {...params} />
+            ),
+        },
+        {
+            field:          'question',
+            headerName:     'Вопросы',
+            width:          300,
+            editable:       true,
+            renderCell:     (params: GridRenderCellParams) => (
+                <MultilineTextRenderer value={params.value || ''}/>
+            ),
+            renderEditCell: (params: GridRenderEditCellParams) => (
+                <MultilineTextEditor {...params} />
+            ),
+        },
+        {
+            field:          'sectionId',
+            headerName:     'Секции',
+            width:          200,
+            renderCell:     (params: GridRenderCellParams) => (
+                <SelectRenderer
+                    value={params.value}
+                    options={data.sections}
+                    onChange={async (newValue) => {
+                        const updatedQuestion = {...params.row, sectionId: newValue};
+                        const formData = new FormData();
+                        formData.set("editQuestion", JSON.stringify(updatedQuestion));
+                        await fetcher.submit(formData, {method: "PATCH"});
+                    }}
+                />
+            ),
+            renderEditCell: (params: GridRenderEditCellParams) =>
+                                SelectEditCell(params, data.sections),
+        },
+        {
+            field:          'categoryId',
+            headerName:     'Категории',
+            width:          200,
+            renderCell:     (params: GridRenderCellParams) => (
+                <SelectRenderer
+                    value={params.value}
+                    options={data.categories}
+                    onChange={async (newValue) => {
+                        const updatedQuestion = {...params.row, categoryId: newValue};
+                        const formData = new FormData();
+                        formData.set("editQuestion", JSON.stringify(updatedQuestion));
+                        await fetcher.submit(formData, {method: "PATCH"});
+                    }}
+                />
+            ),
+            renderEditCell: (params: GridRenderEditCellParams) =>
+                                SelectEditCell(params, data.categories),
+        },
+        {
+            field:          'toolId',
+            headerName:     'Инструменты',
+            width:          200,
+            renderCell:     (params: GridRenderCellParams) => (
+                <SelectRenderer
+                    value={params.value}
+                    options={data.tools}
+                    onChange={async (newValue) => {
+                        const updatedQuestion = {...params.row, toolId: newValue};
+                        const formData = new FormData();
+                        formData.set("editQuestion", JSON.stringify(updatedQuestion));
+                        await fetcher.submit(formData, {method: "PATCH"});
+                    }}
+                />
+            ),
+            renderEditCell: (params: GridRenderEditCellParams) =>
+                                SelectEditCell(params, data.tools),
+        },
     ];
-
-    const editCell = (type: string, question: Question) => {
-        if (editedCell) {
-            return console.log('Edited item!');
-        }
-
-        setEditedCell({id: question.id, type});
-        setEditedQuestion(question);
-    }
-
-    const resetCell = () => {
-        setEditedCell(null);
-        setEditedQuestion(null);
-    }
-
-    const saveCell = async () => {
-        if (!editedQuestion) {
-            return console.log('editedQuestion is null');
-        }
-
-        const formData = new FormData();
-        formData.set("editQuestion", JSON.stringify(editedQuestion));
-        await fetcher.submit(formData, {method: "PATCH"});
-        resetCell();
-    }
-
-    const selectParameter = async (question: Question) => {
-        const formData = new FormData();
-        formData.set("editQuestion", JSON.stringify(question));
-        await fetcher.submit(formData, {method: "PATCH"});
-        resetCell();
-    }
 
     return (
         <Paper>
-            <TableContainer sx={{overflow: 'hidden', overflowX: 'auto'}}>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            {titles.map(({id, label, minWidth}) =>
-                                <TableCell
-                                    key={id}
-                                    style={{minWidth}}
-                                >
-                                    {label}
-                                </TableCell>)}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            data.questions.map(question => (
-                                <TableRow key={question.id} style={{verticalAlign: 'top'}}>
-                                    <TableCell>{question.id}</TableCell>
-                                    <CellEditor
-                                        value={question.standard}
-                                        isEdit={editedCell?.id === question.id && editedCell?.type === 'standard' && !!editedQuestion}
-                                        editValue={editedQuestion?.standard}
-                                        onChange={val => editedQuestion && setEditedQuestion({...editedQuestion, standard: val})}
-                                        selectItem={() => editCell('standard', question)}
-                                        resetCell={resetCell}
-                                        saveCell={saveCell}
-                                    />
-                                    <CellEditor
-                                        value={question.question}
-                                        isEdit={editedCell?.id === question.id && editedCell?.type === 'question' && !!editedQuestion}
-                                        editValue={editedQuestion?.question}
-                                        onChange={val => editedQuestion && setEditedQuestion({...editedQuestion, question: val})}
-                                        selectItem={() => editCell('question', question)}
-                                        resetCell={resetCell}
-                                        saveCell={saveCell}
-                                    />
-                                    <TableCell>
-                                        <Select
-                                            value={question.sectionId || 0}
-                                            label="Секция"
-                                            sx={{width: 250}}
-                                            onChange={(e) => selectParameter({...question, sectionId: e.target.value})}
-                                        >
-                                            {
-                                                data.sections.map(({id, title}) => (
-                                                    <MenuItem key={id} value={id}>{title}</MenuItem>
-                                                ))
-                                            }
-                                            <MenuItem value={0}>Не определен</MenuItem>
-                                        </Select>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Select
-                                            value={question.categoryId || 0}
-                                            label="Категория"
-                                            sx={{width: 250}}
-                                            onChange={(e) => selectParameter({...question, categoryId: e.target.value})}
-                                        >
-                                            {
-                                                data.categories.map(({id, title}) => (
-                                                    <MenuItem key={id} value={id}>{title}</MenuItem>
-                                                ))
-                                            }
-                                            <MenuItem value={0}>Не определен</MenuItem>
-                                        </Select>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Select
-                                            value={question.toolId || 0}
-                                            label="Инструмент"
-                                            sx={{width: 250}}
-                                            onChange={(e) => selectParameter({...question, toolId: e.target.value})}
-                                        >
-                                            {
-                                                data.tools.map(({id, title}) => (
-                                                    <MenuItem key={id} value={id}>{title}</MenuItem>
-                                                ))
-                                            }
-                                            <MenuItem value={0}>Не определен</MenuItem>
-                                        </Select>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <DataGrid
+                rows={data.questions}
+                columns={columns}
+                sx={{
+                    border:                             0,
+                    '& .MuiDataGrid-cell':              {whiteSpace: 'normal', wordWrap: 'break-word',},
+                    '& .MuiDataGrid-cell:focus-within': {outline: 'none',},
+                }}
+                initialState={{
+                    pagination: {paginationModel: {pageSize: 10, page: 0},},
+                    sorting:    {sortModel: [{field: 'id', sort: 'asc'}],},
+                }}
+                pageSizeOptions={[5, 10, 25, 50]}
+                processRowUpdate={processRowUpdate}
+                filterMode="client"
+                sortingMode="client"
+                paginationMode="client"
+                getRowHeight={() => 'auto'}
+                getEstimatedRowHeight={() => 100}
+                onCellKeyDown={(_params, event) => {
+                    if (event.key === 'Enter')
+                        event.stopPropagation();
+                }}
+            />
         </Paper>
     )
 }

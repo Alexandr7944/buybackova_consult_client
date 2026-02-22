@@ -5,7 +5,7 @@ export type BundleParams = {
     tools: ParamsRow[];
 }
 
-type ParamsRow = {
+export type ParamsRow = {
     id: number;
     title: string;
 }
