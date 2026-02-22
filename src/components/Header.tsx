@@ -35,12 +35,9 @@ export const Header: FC = () => {
     const {user, isAdmin} = useAppSelector(state => state.useAuthStore);
     const dispatch = useAppDispatch();
     const [open, toggleDrawer] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileOpen, setMobileOpen] = useState(false);
     const toggleMobile = () => setMobileOpen(v => !v);
-
-    // user menu state
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const menuOpen = Boolean(anchorEl);
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
     const handleMenuClose = () => setAnchorEl(null);
 
@@ -97,8 +94,8 @@ export const Header: FC = () => {
     );
 
     return (
-        <AppBar position="static" color="primary" enableColorOnDark>
-            <Container maxWidth="lg">
+        <AppBar position="sticky" color="primary" enableColorOnDark>
+            <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{gap: 2}}>
                     {/* Mobile menu button */}
                     <Box sx={{display: {xs: 'inline-flex', md: 'none'}}}>
@@ -155,7 +152,7 @@ export const Header: FC = () => {
                                 </IconButton>
                                 <Menu
                                     anchorEl={anchorEl}
-                                    open={menuOpen}
+                                    open={!!anchorEl}
                                     onClose={handleMenuClose}
                                     anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
                                     transformOrigin={{vertical: 'top', horizontal: 'right'}}
@@ -184,7 +181,7 @@ export const Header: FC = () => {
                                 </IconButton>
                                 <Menu
                                     anchorEl={anchorEl}
-                                    open={menuOpen}
+                                    open={!!anchorEl}
                                     onClose={handleMenuClose}
                                     anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
                                     transformOrigin={{vertical: 'top', horizontal: 'right'}}
