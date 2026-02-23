@@ -1,5 +1,5 @@
 import {useFetcher, useLoaderData} from "react-router-dom";
-import type {BundleParams} from "@/pages/admin/recategorize/shared/types.ts";
+import type {BundleParams, ParamsRow, Question} from "@/pages/admin/recategorize/shared/types.ts";
 import {Paper,} from "@mui/material";
 import {
     DataGrid,
@@ -29,23 +29,28 @@ export const CategoryReassignPanel = () => {
         return newRow;
     }, [fetcher]);
 
+    const getValueById = (id: number, arr: ParamsRow[]) =>
+        arr.find(item => item.id === id)?.title;
+
+    const getIdByValue = (value: string | null, arr: ParamsRow[]) => {
+        if (value === null) {
+            return null;
+        }
+
+        return arr.find(({title}) => title === value)?.id ?? null;
+    }
+
+    const submitSelect = async (updatedQuestion: Question) => {
+        const formData = new FormData();
+        formData.set("editQuestion", JSON.stringify(updatedQuestion));
+        await fetcher.submit(formData, {method: "PATCH"});
+    }
+
     const columns = [
         {
             field:      'id',
             headerName: 'ID',
             width:      70
-        },
-        {
-            field:          'standard',
-            headerName:     'Стандарт',
-            width:          300,
-            editable:       true,
-            renderCell:     (params: GridRenderCellParams) => (
-                <MultilineTextRenderer value={params.value || ''}/>
-            ),
-            renderEditCell: (params: GridRenderEditCellParams) => (
-                <MultilineTextEditor {...params} />
-            ),
         },
         {
             field:          'question',
@@ -60,18 +65,31 @@ export const CategoryReassignPanel = () => {
             ),
         },
         {
+            field:          'standard',
+            headerName:     'Стандарт',
+            editable:       true,
+            flex:           1,
+            renderCell:     (params: GridRenderCellParams) => (
+                <MultilineTextRenderer value={params.value || ''}/>
+            ),
+            renderEditCell: (params: GridRenderEditCellParams) => (
+                <MultilineTextEditor {...params} />
+            ),
+        },
+        {
             field:          'sectionId',
             headerName:     'Секции',
             width:          200,
+            valueGetter:    (val: number) => getValueById(val, data.sections),
             renderCell:     (params: GridRenderCellParams) => (
                 <SelectRenderer
                     value={params.value}
                     options={data.sections}
-                    onChange={async (newValue) => {
-                        const updatedQuestion = {...params.row, sectionId: newValue};
-                        const formData = new FormData();
-                        formData.set("editQuestion", JSON.stringify(updatedQuestion));
-                        await fetcher.submit(formData, {method: "PATCH"});
+                    onChange={async (newValue: string | null) => {
+                        await submitSelect({
+                            ...params.row,
+                            sectionId: getIdByValue(newValue, data.sections)
+                        })
                     }}
                 />
             ),
@@ -82,15 +100,16 @@ export const CategoryReassignPanel = () => {
             field:          'categoryId',
             headerName:     'Категории',
             width:          200,
+            valueGetter:    (val: number) => getValueById(val, data.categories),
             renderCell:     (params: GridRenderCellParams) => (
                 <SelectRenderer
                     value={params.value}
                     options={data.categories}
                     onChange={async (newValue) => {
-                        const updatedQuestion = {...params.row, categoryId: newValue};
-                        const formData = new FormData();
-                        formData.set("editQuestion", JSON.stringify(updatedQuestion));
-                        await fetcher.submit(formData, {method: "PATCH"});
+                        await submitSelect({
+                            ...params.row,
+                            categoryId: getIdByValue(newValue, data.categories)
+                        });
                     }}
                 />
             ),
@@ -101,15 +120,16 @@ export const CategoryReassignPanel = () => {
             field:          'toolId',
             headerName:     'Инструменты',
             width:          200,
+            valueGetter:    (val: number) => getValueById(val, data.tools),
             renderCell:     (params: GridRenderCellParams) => (
                 <SelectRenderer
                     value={params.value}
                     options={data.tools}
                     onChange={async (newValue) => {
-                        const updatedQuestion = {...params.row, toolId: newValue};
-                        const formData = new FormData();
-                        formData.set("editQuestion", JSON.stringify(updatedQuestion));
-                        await fetcher.submit(formData, {method: "PATCH"});
+                        await submitSelect({
+                            ...params.row,
+                            toolId: getIdByValue(newValue, data.tools)
+                        });
                     }}
                 />
             ),
@@ -123,16 +143,6 @@ export const CategoryReassignPanel = () => {
             <DataGrid
                 rows={data.questions}
                 columns={columns}
-                sx={{
-                    border:                             0,
-                    '& .MuiDataGrid-cell':              {whiteSpace: 'normal', wordWrap: 'break-word',},
-                    '& .MuiDataGrid-cell:focus-within': {outline: 'none',},
-                }}
-                initialState={{
-                    pagination: {paginationModel: {pageSize: 10, page: 0},},
-                    sorting:    {sortModel: [{field: 'id', sort: 'asc'}],},
-                }}
-                pageSizeOptions={[5, 10, 25, 50]}
                 processRowUpdate={processRowUpdate}
                 filterMode="client"
                 sortingMode="client"
@@ -142,6 +152,16 @@ export const CategoryReassignPanel = () => {
                 onCellKeyDown={(_params, event) => {
                     if (event.key === 'Enter')
                         event.stopPropagation();
+                }}
+                sx={{
+                    border:                             0,
+                    '& .MuiDataGrid-cell':              {whiteSpace: 'normal', wordWrap: 'break-word',},
+                    '& .MuiDataGrid-cell:focus-within': {outline: 'none',},
+                }}
+                pageSizeOptions={[5, 10, 25, 50]}
+                initialState={{
+                    pagination: {paginationModel: {pageSize: 10, page: 0},},
+                    sorting:    {sortModel: [{field: 'id', sort: 'asc'}],},
                 }}
             />
         </Paper>

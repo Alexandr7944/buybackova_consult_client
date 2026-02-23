@@ -5,25 +5,26 @@ export const SelectRenderer = ({
                                    value,
                                    options,
                                    onChange,
-                                   allowEmpty = true
                                }: {
-    value: number | null;
+    value?: string;
     options: ParamsRow[];
-    onChange: (newValue: number | null) => void;
-    allowEmpty?: boolean;
-}) => (
-    <Select
-        value={value || 0}
-        onChange={(e) => {
-            const newValue = e.target.value === 0 ? null : e.target.value as number;
-            onChange(newValue);
-        }}
-        sx={{width: '100%'}}
-        size="small"
-    >
-        {allowEmpty && <MenuItem value={0}>Не определен</MenuItem>}
-        {options.map(({id, title}) => (
-            <MenuItem key={id} value={id}>{title}</MenuItem>
-        ))}
-    </Select>
-);
+    onChange: (newValue: string | null) => void;
+}) => {
+    const DEFAULT_VALUE = '-';
+    return (
+        <Select
+            value={value || DEFAULT_VALUE}
+            onChange={(e) => {
+                const newValue = e.target.value === DEFAULT_VALUE ? null : e.target.value;
+                onChange(newValue);
+            }}
+            sx={{width: '100%'}}
+            size="small"
+        >
+            <MenuItem value={DEFAULT_VALUE}>Не определен</MenuItem>
+            {options.map(({id, title}) => (
+                <MenuItem key={id} value={title}>{title}</MenuItem>
+            ))}
+        </Select>
+    )
+};
