@@ -8,6 +8,7 @@ import Paper from "@mui/material/Paper";
 import HomeIcon from "@mui/icons-material/Home";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import {CLIENT_ROUTES} from "@/router/constants.ts";
 
 export const NotFound: React.FC = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export const NotFound: React.FC = () => {
               color="primary"
               startIcon={<HomeIcon />}
               component={RouterLink}
-              to="/"
+              to={CLIENT_ROUTES.HOME}
             >
               На главную
             </Button>

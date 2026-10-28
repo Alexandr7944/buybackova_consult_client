@@ -5,6 +5,7 @@ import type {Section} from "./shared/types";
 import type {Audit} from "@/pages/audits/shared/types.ts";
 import {BreadcrumbsRow} from "@/components/BreadcrumbsRow.tsx";
 import {createAudit} from "@/pages/audits/shared/audits.api.ts";
+import {buildPath, CLIENT_ROUTES} from "@/router/constants.ts";
 
 export const NewAudit: React.FC = () => {
     const sections = useLoaderData() as Section[];
@@ -27,14 +28,14 @@ export const NewAudit: React.FC = () => {
         const response = await createAudit(JSON.stringify(newAudit));
 
         if (response.id)
-            navigate(`/audit/${response.id}/edit`)
+            navigate(buildPath(CLIENT_ROUTES.EDITED_AUDIT, {id: response.id}))
     }
 
     return (
         <>
             <BreadcrumbsRow
                 name="Новый аудит"
-                links={[{href: `/object/${audit.objectId}`, name: 'Аудиты'}]}
+                links={[{href: buildPath(CLIENT_ROUTES.AUDIT_LIST, {id: audit.objectId}), name: 'Аудиты'}]}
             />
 
             <MaturityLevelInput

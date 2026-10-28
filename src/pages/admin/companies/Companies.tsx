@@ -1,4 +1,5 @@
 import type {Company} from "@/pages/admin/companies/shared/types.ts";
+import {buildPath, CLIENT_ROUTES} from "@/router/constants.ts";
 import {useLoaderData, useNavigate} from "react-router-dom";
 import {
     Accordion,
@@ -165,7 +166,7 @@ export const Companies = () => {
                                                         variant="filled"
                                                         size="small"
                                                         color="primary"
-                                                        onClick={() => navigate(`/object/${object.id}`)}
+                                                        onClick={() => navigate(buildPath(CLIENT_ROUTES.AUDIT_LIST, {id: object.id}))}
                                                     />
                                                 </Tooltip>
                                             ))}

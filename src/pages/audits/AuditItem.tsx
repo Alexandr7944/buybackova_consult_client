@@ -11,6 +11,7 @@ import {PDFPreviewModal} from "@/components/PDFPreviewModal.tsx";
 import type EChartsReact from "echarts-for-react";
 import {PDFExportButton} from "@/components/PdfExportButton.tsx";
 import type {ElementForExport} from "@/utils/PDFExportService.ts";
+import {buildPath, CLIENT_ROUTES} from "@/router/constants.ts";
 
 export const AuditItem = () => {
     const auditValue = useLoaderData<Audit>();
@@ -68,7 +69,7 @@ export const AuditItem = () => {
         <>
             <BreadcrumbsRow
                 name="Протокол аудита"
-                links={[{href: `/object/${auditValue.objectId}`, name: 'Аудиты'}]}
+                links={[{href: buildPath(CLIENT_ROUTES.AUDIT_LIST, {id: auditValue.objectId}), name: 'Аудиты'}]}
             />
 
             <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{marginTop: 3, marginBottom: 3}}>
@@ -76,7 +77,7 @@ export const AuditItem = () => {
                     className="no-print"
                     variant="outlined"
                     color="primary"
-                    onClick={() => navigate(`/audit/${auditValue.id}/edit`)}
+                    onClick={() => navigate(buildPath(CLIENT_ROUTES.EDITED_AUDIT, {id: auditValue.id}))}
                 >
                     Редактировать
                 </Button>

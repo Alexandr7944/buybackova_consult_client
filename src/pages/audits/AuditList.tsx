@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/edit';
 import DeleteIcon from '@mui/icons-material/delete';
 import React from "react";
 import {useAppSelector} from "@/hooks/hook.ts";
+import {buildPath, CLIENT_ROUTES} from "@/router/constants.ts";
 
 export const AuditList = () => {
     const auditedObject = useLoaderData<AuditableObject>();
@@ -23,7 +24,7 @@ export const AuditList = () => {
 
     const editAudit = (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
         e.stopPropagation();
-        navigate(`/audit/${id}/edit`);
+        navigate(buildPath(CLIENT_ROUTES.EDITED_AUDIT, {id}));
     }
 
     const deleteAudit = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
@@ -68,7 +69,7 @@ export const AuditList = () => {
                 <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => navigate(`/audit/${auditedObject.id}/create`)}
+                    onClick={() => navigate(buildPath(CLIENT_ROUTES.NEW_AUDIT, {objectId: auditedObject.id}))}
                 >
                     Пройти аудит
                 </Button>
@@ -89,7 +90,7 @@ export const AuditList = () => {
                                 <TableRow
                                     key={row.id}
                                     sx={{'&:last-child td, &:last-child th': {border: 0}, cursor: 'pointer'}}
-                                    onClick={() => navigate(`/audit/${row.id}`)}
+                                    onClick={() => navigate(buildPath(CLIENT_ROUTES.REPORT, {id: row.id}))}
                                 >
                                     {columns.map(({value}) => (
                                         <TableCell key={value}>

@@ -7,6 +7,7 @@ import {ObjectForm} from "@/components/ObjectForm.tsx";
 import {RenderIf} from "@/components/RenderIf.tsx";
 import {SearchAndSort} from "@/components/ui/SearchAndSort.tsx";
 import {useAppSelector} from "@/hooks/hook.ts";
+import {buildPath, CLIENT_ROUTES} from "@/router/constants.ts";
 
 type FormType = {
     mode: 'create' | 'edit' | null;
@@ -108,7 +109,7 @@ export const AuditableObjects: React.FC = () => {
             <Stack direction="row" justifyContent="end" alignItems="center" gap={2}>
                 <Button> Аудиты </Button>
                 {isAdmin && <Button
-                    onClick={() => navigate(`/audit/${row.id}/create`)}
+                    onClick={() => navigate(buildPath(CLIENT_ROUTES.NEW_AUDIT, {objectId: row.id}))}
                     className="text-nowrap"
                 >
                     Пройти аудит
@@ -175,7 +176,7 @@ export const AuditableObjects: React.FC = () => {
                                 <TableRow
                                     key={row.id}
                                     sx={{'&:last-child td, &:last-child th': {border: 0}, cursor: 'pointer'}}
-                                    onClick={() => navigate(`/object/${row.id}`)}
+                                    onClick={() => navigate(buildPath(CLIENT_ROUTES.AUDIT_LIST, {id: row.id}))}
                                 >
                                     {columns.map(({value}) => (
                                         <TableCell key={value}>{getCellValue(row, value)}</TableCell>)

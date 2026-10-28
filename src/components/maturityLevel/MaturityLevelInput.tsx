@@ -4,7 +4,7 @@ import type {Row, Section} from "@/pages/audits/shared/types.ts";
 import type {Audit} from "@/pages/audits/shared/types.ts";
 import {
     Accordion, AccordionDetails, AccordionSummary, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Typography, Paper, TextField,Container,
+    Typography, Paper, TextField, Container,
 } from "@mui/material";
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 
@@ -12,6 +12,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {useNavigate} from "react-router-dom";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import {buildPath, CLIENT_ROUTES} from "@/router/constants.ts";
 import {ru} from 'date-fns/locale/ru';
 
 export type FormState = Record<string, number>;
@@ -78,7 +79,7 @@ export const MaturityLevelInput: React.FC<MaturityLevelProps> = ({sections, audi
 
     const showReport = () => {
         saveForm();
-        navigate(`/audit/${audit.id}`)
+        navigate(buildPath(CLIENT_ROUTES.REPORT, {id: audit.id}))
     }
 
     return (

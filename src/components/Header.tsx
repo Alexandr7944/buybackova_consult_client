@@ -30,6 +30,7 @@ import {RenderIf} from "@/components/RenderIf.tsx";
 import SettingsIcon from '@mui/icons-material/Settings';
 import BusinessIcon from '@mui/icons-material/Business';
 import CheckIcon from '@mui/icons-material/Check';
+import {CLIENT_ROUTES} from "@/router/constants.ts";
 
 export const Header: FC = () => {
     const {user, isAdmin} = useAppSelector(state => state.useAuthStore);
@@ -46,19 +47,19 @@ export const Header: FC = () => {
         handleMenuClose();
         await clearSessionCache();
         dispatch(logout());
-        navigate('/auth/login');
+        navigate(CLIENT_ROUTES.LOGIN);
     };
 
     const links = [
-        {name: "Объекты", to: "../", icon: <CheckIcon/>},
-        // {name: "Об авторах методологии", to: "/about", icon: ''},
-        {name: "Методология", to: "/methodology", icon: <CheckIcon/>},
+        {name: "Объекты", to: CLIENT_ROUTES.HOME, icon: <CheckIcon/>},
+        // {name: "Об авторах методологии", to: CLIENT_ROUTES.ABOUT, icon: ''},
+        {name: "Методология", to: CLIENT_ROUTES.METHODOLOGY, icon: <CheckIcon/>},
         // {name: "Контакты", to: "/contacts", icon: ''},
     ];
 
     const linksForAdmin = [
-        {name: "Компании", to: "/admin/companies", icon: <BusinessIcon/>},
-        {name: "Параметры", to: "/admin/recategorize", icon: <SettingsIcon/>}
+        {name: "Компании", to: CLIENT_ROUTES.COMPANIES, icon: <BusinessIcon/>},
+        {name: "Параметры", to: CLIENT_ROUTES.SETTINGS_REPORT, icon: <SettingsIcon/>}
     ]
 
     const drawer = (
@@ -76,9 +77,9 @@ export const Header: FC = () => {
             <Box px={2} pb={2}>
                 {!(user && user.username)
                     ? <Stack gap={2}>
-                        <Button fullWidth variant="contained" aria-label="auth actions" onClick={() => navigate('/auth/login')}>Вход</Button>
+                        <Button fullWidth variant="contained" aria-label="auth actions" onClick={() => navigate(CLIENT_ROUTES.LOGIN)}>Вход</Button>
                         <Button fullWidth variant="contained" aria-label="auth actions"
-                                onClick={() => navigate('/auth/registration')}>Регистрация</Button>
+                                onClick={() => navigate(CLIENT_ROUTES.REGISTRATION)}>Регистрация</Button>
                     </Stack>
                     : <Button
                         fullWidth
@@ -97,7 +98,6 @@ export const Header: FC = () => {
         <AppBar position="sticky" color="primary" enableColorOnDark>
             <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{gap: 2}}>
-                    {/* Mobile menu button */}
                     <Box sx={{display: {xs: 'inline-flex', md: 'none'}}}>
                         <IconButton
                             color="inherit"
@@ -109,17 +109,15 @@ export const Header: FC = () => {
                         </IconButton>
                     </Box>
 
-                    {/* Logo */}
                     <Button
                         color="inherit"
                         component={RouterLink}
-                        to="../"
+                        to={CLIENT_ROUTES.HOME}
                         sx={{fontWeight: 700, letterSpacing: 0.3}}
                     >
                         ВАУbakova
                     </Button>
 
-                    {/* Desktop links */}
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, gap: 2}}>
                         <RenderIf condition={isAdmin}>
                             <Button
@@ -143,7 +141,6 @@ export const Header: FC = () => {
                         ))}
                     </Box>
 
-                    {/* Right side */}
                     <Box sx={{display: {xs: 'none', md: 'flex'}, alignItems: 'center', gap: 1}}>
                         {!(user && user.username) ? (
                             <>
@@ -166,10 +163,10 @@ export const Header: FC = () => {
                                         </ListItemText>
                                     </MenuItem>
                                     <Divider/>
-                                    <MenuItem onClick={() => navigate('/auth/login')}>
+                                    <MenuItem onClick={() => navigate(CLIENT_ROUTES.LOGIN)}>
                                         <ListItemText>Вход</ListItemText>
                                     </MenuItem>
-                                    <MenuItem onClick={() => navigate('/auth/registration')}>
+                                    <MenuItem onClick={() => navigate(CLIENT_ROUTES.REGISTRATION)}>
                                         <ListItemText>Регистрация</ListItemText>
                                     </MenuItem>
                                 </Menu>
@@ -208,7 +205,6 @@ export const Header: FC = () => {
                 </Toolbar>
             </Container>
 
-            {/* Admin drawer */}
             <Drawer
                 open={open}
                 onClose={() => toggleDrawer(false)}
@@ -233,7 +229,6 @@ export const Header: FC = () => {
                 </nav>
             </Drawer>
 
-            {/* Mobile drawer */}
             <Drawer
                 anchor="left"
                 open={mobileOpen}

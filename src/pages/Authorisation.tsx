@@ -2,6 +2,7 @@ import {type FC, type FormEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Box, Button, Container, Paper, Stack, TextField, Typography, Alert} from "@mui/material";
 import apiClient from "@/shared/axios.ts";
+import {CLIENT_ROUTES} from "@/router/constants.ts";
 
 export const Authorisation: FC<{}> = () => {
     const [formData, setFormData] = useState({username: '', password: ''});
@@ -27,7 +28,7 @@ export const Authorisation: FC<{}> = () => {
             if (result.token)
                 localStorage.setItem('token', result.token);
 
-            await navigate('../');
+            await navigate(CLIENT_ROUTES.HOME);
         } catch (err: Error | any) {
             if (err?.status === 401) {
                 setAlert('Неправильный логин или пароль');

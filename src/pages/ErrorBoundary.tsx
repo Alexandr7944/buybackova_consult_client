@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {Link as RouterLink, isRouteErrorResponse, useRouteError} from "react-router-dom";
 import {Header} from "@/components/Header.tsx";
+import {CLIENT_ROUTES} from "@/router/constants.ts";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
@@ -83,7 +84,7 @@ export default function ErrorBoundary() {
                                 variant="contained"
                                 startIcon={<HomeIcon/>}
                                 component={RouterLink}
-                                to="/"
+                                to={CLIENT_ROUTES.HOME}
                             >
                                 На главную
                             </Button>

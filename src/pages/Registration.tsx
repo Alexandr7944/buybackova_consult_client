@@ -2,6 +2,7 @@ import {type FC, type FormEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Box, Button, Container, Paper, Stack, TextField, Typography} from "@mui/material";
 import apiClient from "@/shared/axios.ts";
+import {CLIENT_ROUTES} from "@/router/constants.ts";
 
 export const Registration: FC = () => {
     const [formData, setFormData] = useState({username: '', name: '', password: ''});
@@ -18,7 +19,7 @@ export const Registration: FC = () => {
             if (result.token)
                 localStorage.setItem('token', result.token);
 
-            navigate('../methodology');
+            navigate(CLIENT_ROUTES.METHODOLOGY);
         } catch (e) {
             console.warn(e);
         }
@@ -77,7 +78,7 @@ export const Registration: FC = () => {
 
                         <Button
                             variant="outlined"
-                            onClick={() => navigate('/auth/login')}
+                            onClick={() => navigate(CLIENT_ROUTES.LOGIN)}
                             fullWidth
                         >
                             Авторизация

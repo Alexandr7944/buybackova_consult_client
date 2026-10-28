@@ -7,6 +7,7 @@ import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "@/hooks/hook.ts";
 import {setUser, type User} from "@/store/useAuthStore.ts";
 import {Container} from "@mui/material";
+import {CLIENT_ROUTES, SEGMENTS} from "@/router/constants.ts";
 
 const basename = import.meta.env.MODE === "production"
     ? import.meta.env.VITE_PRODUCT_PATH
@@ -37,7 +38,7 @@ function RootLayout() {
 export const routes: RouteObject[] = [
     {
         id:              "root",
-        path:            "/",
+        path:            CLIENT_ROUTES.HOME,
         Component:       RootLayout,
         HydrateFallback: AppSkeleton,
         errorElement:    <ErrorBoundary/>,
@@ -48,7 +49,6 @@ export const routes: RouteObject[] = [
                 loader:   withAuth({requireAuth: true, roles: ['user', 'admin']}),
                 children: [
                     {
-                        // objects list by owner
                         index: true,
                         lazy:  async () => {
                             const mod = await import("@/pages/audits/routes/auditable-objects.route.ts");
@@ -60,8 +60,7 @@ export const routes: RouteObject[] = [
                         },
                     },
                     {
-                        //audits list by object
-                        path: '/object/:id',
+                        path: SEGMENTS.AUDIT_LIST,
                         lazy: async () => {
                             const mod = await import("@/pages/audits/routes/audit-list.route");
                             return {
@@ -72,11 +71,10 @@ export const routes: RouteObject[] = [
                         },
                     },
                     {
-                        path:     '/audit',
+                        path:     CLIENT_ROUTES.AUDIT,
                         children: [
                             {
-                                // show audit item by id
-                                path: ':id',
+                                path: SEGMENTS.REPORT,
                                 lazy: async () => {
                                     const mod = await import("@/pages/audits/routes/audit-item.route");
                                     return {
@@ -87,8 +85,7 @@ export const routes: RouteObject[] = [
                                 },
                             },
                             {
-                                // create new audit by object id
-                                path: ':objectId/create',
+                                path: SEGMENTS.NEW_AUDIT,
                                 lazy: async () => {
                                     const mod = await import("@/pages/audits/routes/new-audit.route");
                                     return {
@@ -99,8 +96,7 @@ export const routes: RouteObject[] = [
                                 },
                             },
                             {
-                                // edit audit by id
-                                path: ':id/edit',
+                                path: SEGMENTS.EDITED_AUDIT,
                                 lazy: async () => {
                                     const mod = await import("@/pages/audits/routes/audit-edit.route");
                                     return {
@@ -113,11 +109,11 @@ export const routes: RouteObject[] = [
                         ]
                     },
                     {
-                        path:     '/admin',
+                        path:     CLIENT_ROUTES.ADMIN,
                         loader:   withAuth({requireAuth: true, roles: ['admin']}),
                         children: [
                             {
-                                path: 'companies',
+                                path: SEGMENTS.COMPANIES,
                                 lazy: async () => {
                                     const mod = await import('@/pages/admin/companies/companies.route');
                                     return {
@@ -128,7 +124,7 @@ export const routes: RouteObject[] = [
                                 }
                             },
                             {
-                                path: 'recategorize',
+                                path: SEGMENTS.SETTINGS_REPORT,
                                 lazy: async () => {
                                     const mod = await import('@/pages/admin/recategorize/index.route');
                                     return {
@@ -143,28 +139,28 @@ export const routes: RouteObject[] = [
                 ]
             },
             // {
-            //     path: "/about",
+            //     path: CLIENT_ROUTES.ABOUT,
             //     lazy: async () => {
             //         const mod = await import("@/pages/AboutUs");
             //         return {Component: mod.AboutUs};
             //     },
             // },
             {
-                path: "/methodology",
+                path: CLIENT_ROUTES.METHODOLOGY,
                 lazy: async () => {
                     const mod = await import("@/pages/Methodology.tsx");
                     return {Component: mod.Methodology};
                 },
             },
             {
-                path: '/auth/registration',
+                path: CLIENT_ROUTES.REGISTRATION,
                 lazy: async () => {
                     const mod = await import("@/pages/Registration");
                     return {Component: mod.Registration};
                 },
             },
             {
-                path: '/auth/login',
+                path: CLIENT_ROUTES.LOGIN,
                 lazy: async () => {
                     const mod = await import("@/pages/Authorisation");
                     return {Component: mod.Authorisation};

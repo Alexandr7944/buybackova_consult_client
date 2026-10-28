@@ -4,6 +4,7 @@ import {MaturityLevelInput} from "@/components/maturityLevel/MaturityLevelInput"
 import type {Section, Report} from "./shared/types";
 import type {Audit} from "@/pages/audits/shared/types.ts";
 import {BreadcrumbsRow} from "@/components/BreadcrumbsRow.tsx";
+import {buildPath, CLIENT_ROUTES} from "@/router/constants.ts";
 
 export const AuditEdit: React.FC = () => {
     const [sections, audit] = useLoaderData<[Section[], Audit]>();
@@ -22,7 +23,7 @@ export const AuditEdit: React.FC = () => {
         <>
             <BreadcrumbsRow
                 name="Редактирование аудита"
-                links={[{href: `/object/${audit.objectId}`, name: 'Аудиты'}]}
+                links={[{href: buildPath(CLIENT_ROUTES.AUDIT_LIST, {id: audit.objectId}), name: 'Аудиты'}]}
             />
 
             <MaturityLevelInput

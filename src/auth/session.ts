@@ -1,13 +1,10 @@
 import {redirect} from "react-router-dom";
 import {type User} from "@/store/useAuthStore.ts";
 import apiClient from "@/shared/axios.ts";
+import {CLIENT_ROUTES} from "@/router/constants.ts";
 
-let cachedUser: User | null | undefined; // undefined = не загружен; null = гость
+let cachedUser: User | null | undefined;
 
-/**
- * Получить текущего пользователя. Возвращает null, если не авторизован.
- * Делает один запрос и кеширует результат; учитывает AbortSignal.
- */
 export async function getCurrentUser(signal?: AbortSignal): Promise<User | null> {
     if (cachedUser) return cachedUser;
 
@@ -22,10 +19,9 @@ export async function getCurrentUser(signal?: AbortSignal): Promise<User | null>
     }
 }
 
-/** Сброс кеша сессии — используйте после логина/логаута/обновления профиля. */
 export async function clearSessionCache() {
-    await apiClient.get<void>('/auth/logout');
+    await apiClient.get<void>(CLIENT_ROUTES.LOGOUT);
     cachedUser = undefined;
     localStorage.removeItem('token');
-    redirect('/auth/login');
+    redirect(CLIENT_ROUTES.LOGIN);
 }

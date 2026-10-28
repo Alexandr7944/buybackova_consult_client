@@ -2,6 +2,7 @@ import {Breadcrumbs, Typography} from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import type {FC} from "react";
+import {CLIENT_ROUTES} from "@/router/constants.ts";
 
 type BreadcrumbsRowProps = {
     links: Array<{
@@ -18,7 +19,7 @@ export const BreadcrumbsRow: FC<BreadcrumbsRowProps> = ({links, name}) => {
             className="no-print"
             sx={{paddingBottom: 2}}
         >
-            <RouterLink to="/" className="flex items-center">
+            <RouterLink to={CLIENT_ROUTES.HOME} className="flex items-center">
                 <HomeIcon sx={{mr: 0.5}} fontSize="inherit"/>
                 Объекты
             </RouterLink>
