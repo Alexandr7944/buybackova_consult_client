@@ -3,7 +3,7 @@ import {useFetcher} from 'react-router-dom';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, InputLabel, Select, MenuItem, Alert
 } from '@mui/material';
-import type {Company} from "@/pages/admin/shared/types.ts";
+import type {Company} from "@/pages/admin/companies/shared/types.ts";
 
 interface CompanyFormProps {
     onClose: () => void;

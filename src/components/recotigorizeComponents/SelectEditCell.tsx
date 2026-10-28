@@ -5,7 +5,7 @@ import type {ParamsRow} from "@/pages/admin/recategorize/shared/types.ts";
 export const SelectEditCell = (props: GridRenderEditCellParams, options: ParamsRow[]) => {
     const { id, field, value, api } = props;
 
-    const handleChange = (newValue: number | null) => {
+    const handleChange = (newValue: string | null) => {
         api.setEditCellValue({ id, field, value: newValue });
         api.stopCellEditMode({ id, field });
     };
